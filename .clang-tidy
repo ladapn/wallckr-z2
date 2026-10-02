@@ -1,0 +1,15 @@
+# Deliberately small (KISS/YAGNI): grow this list when a class of bug actually bites.
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  clang-analyzer-*,
+  performance-*,
+  modernize-*,
+  -modernize-use-trailing-return-type,
+  readability-braces-around-statements,
+  readability-container-size-empty,
+  readability-redundant-*
+WarningsAsErrors: '*'
+# Only report on our own headers, not Zephyr/ETL/HAL ones.
+HeaderFilterRegex: '.*/wallckr-z2/firmware/.*'
