@@ -1,0 +1,63 @@
+/*
+ * wallckr-z2 Button/LED shield, stacked on top of the X-NUCLEO-BNRG2A1.
+ *
+ * Pins are referenced as MCU GPIOs rather than through the arduino_header
+ * nexus: on nucleo_f401re only PB10 (D6) is an Arduino header pin; PB2,
+ * PB13, PB15 and PC8 are Morpho-only.
+ */
+
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	/* Active low: the GPIO sinks the LED current from the 5V rail. */
+	status_leds {
+		compatible = "gpio-leds";
+
+		led_state1: led_state1 {
+			gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+			label = "LED_STATE1 (green)";
+		};
+
+		led_state2: led_state2 {
+			gpios = <&gpiob 10 GPIO_ACTIVE_LOW>;
+			label = "LED_STATE2 (green)";
+		};
+
+		led_err: led_err {
+			gpios = <&gpiob 15 GPIO_ACTIVE_LOW>;
+			label = "LED_ERR (red)";
+		};
+	};
+
+	/* Active low, external 10k pull-ups to 3V3. */
+	buttons {
+		compatible = "gpio-keys";
+
+		button1: button1 {
+			gpios = <&gpiob 13 GPIO_ACTIVE_LOW>;
+			label = "Button 1";
+			zephyr,code = <INPUT_KEY_1>;
+		};
+
+		button2: button2 {
+			gpios = <&gpioc 8 GPIO_ACTIVE_LOW>;
+			label = "Button 2";
+			zephyr,code = <INPUT_KEY_2>;
+		};
+	};
+
+	aliases {
+		/delete-property/ sw0;
+	};
+};
+
+/* STM32 EXTI lines are shared per pin number across ports, so Button 1
+ * (PB13) and the Nucleo's own B1 button (PC13) cannot both raise
+ * interrupts. Button 1 wins; B1 is dropped.
+ */
+/delete-node/ &user_button;
+
+/* Board default SPI2 sits on PB12..PB15 (Button 1, LED_ERR). */
+&spi2 {
+	status = "disabled";
+};

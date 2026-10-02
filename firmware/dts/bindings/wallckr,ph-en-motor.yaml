@@ -1,0 +1,22 @@
+description: |
+  Brushed DC motor behind an H-bridge in phase/enable (PH/EN) mode, e.g. a
+  DRV8874 with PMODE tied low: a PWM on EN sets the speed, PH the direction.
+
+compatible: "wallckr,ph-en-motor"
+
+include: base.yaml
+
+properties:
+  pwms:
+    required: true
+    type: phandle-array
+    description: PWM specifier driving the EN input (speed).
+
+  ph-gpios:
+    required: true
+    type: phandle-array
+    description: GPIO driving the PH input. Active = forward.
+
+  fault-gpios:
+    type: phandle-array
+    description: Driver fault output (nFAULT). Active = fault.

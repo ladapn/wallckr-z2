@@ -1,0 +1,27 @@
+# West manifest for wallckr-z2. This repo is the manifest repo:
+#   west init -l wallckr-z2 && west update
+# puts the workspace root at wallckr-z2's parent directory (see docs/DESIGN_NOTES.md).
+manifest:
+  self:
+    path: wallckr-z2
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+    - name: etlcpp
+      url-base: https://github.com/ETLCPP
+
+  projects:
+    - name: zephyr
+      remote: zephyrproject-rtos
+      revision: v4.4.2
+      import:
+        # Only pull the modules nucleo_f401re actually needs, not every HAL.
+        name-allowlist:
+          - cmsis_6
+          - hal_stm32
+
+    - name: etl
+      remote: etlcpp
+      revision: 20.49.0
+      path: modules/lib/etl

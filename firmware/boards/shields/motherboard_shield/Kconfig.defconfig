@@ -1,0 +1,9 @@
+if SHIELD_MOTHERBOARD_SHIELD
+
+# The upstream hc-sr04 driver waits at most 10 ms for the echo (~1.6 m),
+# short of the 2 m range v1 used, so the ultrasonic nodes are only used as
+# a hardware description and measured by the applications themselves.
+config HC_SR04
+	default n
+
+endif # SHIELD_MOTHERBOARD_SHIELD
