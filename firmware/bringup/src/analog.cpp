@@ -7,7 +7,7 @@
 namespace {
 
 #define BATTERY_NODE DT_NODELABEL(battery_voltage)
-#define CURRENT_NODE DT_NODELABEL(motor_current)
+#define CURRENT_NODE DT_NODELABEL(supply_current)
 
 const adc_dt_spec battery = ADC_DT_SPEC_GET(BATTERY_NODE);
 const adc_dt_spec current = ADC_DT_SPEC_GET(CURRENT_NODE);
@@ -85,4 +85,4 @@ int analog_init()
     return 0;
 }
 
-SHELL_CMD_REGISTER(analog, NULL, "Read battery voltage and motor current", cmd_analog);
+SHELL_CMD_REGISTER(analog, NULL, "Read battery voltage and total supply current", cmd_analog);

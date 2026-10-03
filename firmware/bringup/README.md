@@ -26,7 +26,7 @@ On boot the three status LEDs light in turn (STATE1, STATE2, ERR).
 | `motor speed <-255..255>`, `motor stop`, `motor status` | DRV8874: EN PWM (25 kHz), PH direction, nFAULT. A fault is also logged when it occurs |
 | `servo angle <0..180>`, `servo pulse <us>`, `servo off` | Steering servo. Angle maps to 544–2400 µs, same as v1's Arduino `Servo` |
 | `sonar [1..4]` | HY-SRF05 distance, one sensor or all four (sensor N = connector J(N+1)) |
-| `analog` | Battery voltage (PB1) and motor current (PC5): raw ADC, pin voltage, scaled value |
+| `analog` | Battery voltage (PB1) and total supply current (PC5): raw ADC, pin voltage, scaled value |
 | `encoder` | Raw quadrature count from TIM4 (wraps; counts down when reversing) |
 
 Lift the wheels off the ground before running `motor speed`.

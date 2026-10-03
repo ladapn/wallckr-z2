@@ -72,7 +72,7 @@
 	/* INA169 (1 mA/V) across Rsense1 = 100 mOhm, load R3 = 16k5:
 	 * gain = 1 mA/V * 16.5 kOhm = 33 / 2.
 	 */
-	motor_current: motor_current {
+	supply_current: supply_current {
 		compatible = "current-sense-amplifier";
 		io-channels = <&adc1 15>;
 		sense-resistor-milli-ohms = <100>;
@@ -127,7 +127,7 @@
 	};
 };
 
-/* Battery voltage on PB1 (IN9), motor current on PC5 (IN15). The board
+/* Battery voltage on PB1 (IN9), supply current on PC5 (IN15). The board
  * default routes IN0/PA0 instead, which is the BLE shield's IRQ line.
  */
 &adc1 {
