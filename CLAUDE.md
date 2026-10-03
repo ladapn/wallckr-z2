@@ -30,7 +30,7 @@ Guidance for AI-assisted (Claude Code) work in this repo — porting wallckr (v1
 ## Language & style
 
 - **C++23.** Enable per-app in `prj.conf`: `CONFIG_CPP=y`, `CONFIG_STD_CPP23=y`. Confirm these Kconfig symbols still exist for whatever Zephyr version is actually pinned (`CONFIG_STD_CPP23` is fairly recent, present by v4.2 — don't assume it on an older release).
-- **C++ standard library:** default to Zephyr's Minimal C++ Library (`CONFIG_LIBCPP_IMPLEMENTATION=MINIMAL`) rather than full libstdc++, to keep flash/RAM footprint down — this pairs naturally with ETL rather than fighting it. Exceptions and RTTI off (`CONFIG_CPP_EXCEPTIONS=n`, `CONFIG_CPP_RTTI=n`) unless something concrete needs them.
+- **C++ standard library:** default to Zephyr's Minimal C++ Library (`CONFIG_MINIMAL_LIBCPP=y` — one option of the `LIBCPP_IMPLEMENTATION` Kconfig choice, and also its default) rather than full libstdc++, to keep flash/RAM footprint down — this pairs naturally with ETL rather than fighting it. Exceptions and RTTI off (`CONFIG_CPP_EXCEPTIONS=n`, `CONFIG_CPP_RTTI=n`) unless something concrete needs them.
 - **Containers/utilities:** Embedded Template Library (ETL) — https://github.com/ETLCPP/etl. No heap allocation; doesn't require exceptions (falls back to an error-handler callback instead of throwing). Not bundled with Zephyr — needs adding as an external dependency (west module, or CMake `FetchContent`/submodule) rather than assumed present.
 - **Code style:** WebKit style (https://webkit.org/code-style-guidelines/). Enforce via a `.clang-format` at the repo root rather than by manual review.
 

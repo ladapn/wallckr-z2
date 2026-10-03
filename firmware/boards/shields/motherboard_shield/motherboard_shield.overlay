@@ -59,12 +59,14 @@
 		echo-gpios = <&st_morpho_header ST_MORPHO_R_14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* PA11 */
 	};
 
-	/* R1 = 360k, R2 = 75k (schematic values). */
+	/* R1 = 300k, R2 = 75k (1/5), as fitted on the board. The schematic
+	 * still says R1 = 360k, which is a schematic error.
+	 */
 	battery_voltage: battery_voltage {
 		compatible = "voltage-divider";
 		io-channels = <&adc1 9>;
 		output-ohms = <75000>;
-		full-ohms = <(360000 + 75000)>;
+		full-ohms = <(300000 + 75000)>;
 	};
 
 	/* INA169 (1 mA/V) across Rsense1 = 100 mOhm, load R3 = 16k5:
