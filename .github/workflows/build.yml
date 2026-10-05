@@ -1,0 +1,60 @@
+name: Build
+
+on: pull_request
+
+jobs:
+  format:
+    name: Code formatting
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install clang-format
+        run: pip install clang-format==22.1.5
+
+      - name: Check formatting
+        run: git ls-files -z 'firmware/*.cpp' 'firmware/*.h' | xargs -0 --no-run-if-empty clang-format --dry-run -Werror
+
+  firmware:
+    name: Build and static analysis (${{ matrix.app }})
+    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # Add main once firmware/main exists.
+        app: [bringup]
+    steps:
+      # The repo is the west manifest repository, so it is checked out one
+      # level below the workspace root (see docs/DESIGN_NOTES.md).
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: wallckr-z2
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Set up Zephyr workspace and SDK
+        uses: zephyrproject-rtos/action-zephyr-setup@be8136a8bba01580485d98b7ad2d32477c36a49a # v1.0.15
+        with:
+          app-path: wallckr-z2
+          toolchains: arm-zephyr-eabi
+
+      - name: Build
+        run: >
+          west build -p -b nucleo_f401re
+          --shield motherboard_shield --shield x_nucleo_bnrg2a1 --shield buttonled_shield
+          -d build/${{ matrix.app }} wallckr-z2/firmware/${{ matrix.app }}
+
+      - name: Install clang-tidy
+        run: pip install clang-tidy==22.1.8
+
+      - name: Static analysis
+        working-directory: wallckr-z2
+        run: >
+          git ls-files -z 'firmware/${{ matrix.app }}/*.cpp'
+          | xargs -0 python3 tools/clang_tidy.py ../build/${{ matrix.app }}
