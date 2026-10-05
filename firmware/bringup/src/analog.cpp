@@ -25,10 +25,10 @@ int read(const adc_dt_spec& channel, Reading& reading)
         .buffer_size = sizeof(sample),
     };
 
-    if (int ret = adc_sequence_init_dt(&channel, &sequence); ret) {
+    if (int ret = adc_sequence_init_dt(&channel, &sequence)) {
         return ret;
     }
-    if (int ret = adc_read_dt(&channel, &sequence); ret) {
+    if (int ret = adc_read_dt(&channel, &sequence)) {
         return ret;
     }
 
@@ -54,14 +54,14 @@ int cmd_analog(const shell* sh, size_t, char**)
 {
     Reading reading;
 
-    if (int ret = read(battery, reading); ret) {
+    if (int ret = read(battery, reading)) {
         shell_error(sh, "Battery voltage read failed (%d)", ret);
         return ret;
     }
     shell_print(sh, "battery: %d mV (raw %d, pin %d mV)", battery_mv(reading.pin_mv), reading.raw,
         reading.pin_mv);
 
-    if (int ret = read(current, reading); ret) {
+    if (int ret = read(current, reading)) {
         shell_error(sh, "Current read failed (%d)", ret);
         return ret;
     }
@@ -78,7 +78,7 @@ int analog_init()
         if (!adc_is_ready_dt(channel)) {
             return -ENODEV;
         }
-        if (int ret = adc_channel_setup_dt(channel); ret) {
+        if (int ret = adc_channel_setup_dt(channel)) {
             return ret;
         }
     }

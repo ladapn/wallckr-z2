@@ -21,13 +21,13 @@ int current_speed;
 
 int set_speed(int speed)
 {
-    if (int ret = gpio_pin_set_dt(&phase, speed >= 0); ret) {
+    if (int ret = gpio_pin_set_dt(&phase, speed >= 0)) {
         return ret;
     }
 
     uint32_t magnitude = speed < 0 ? -speed : speed;
     uint32_t pulse = static_cast<uint64_t>(enable.period) * magnitude / max_speed;
-    if (int ret = pwm_set_pulse_dt(&enable, pulse); ret) {
+    if (int ret = pwm_set_pulse_dt(&enable, pulse)) {
         return ret;
     }
 
@@ -72,17 +72,17 @@ int motor_init()
         return -ENODEV;
     }
 
-    if (int ret = gpio_pin_configure_dt(&phase, GPIO_OUTPUT_ACTIVE); ret) {
+    if (int ret = gpio_pin_configure_dt(&phase, GPIO_OUTPUT_ACTIVE)) {
         return ret;
     }
-    if (int ret = gpio_pin_configure_dt(&fault, GPIO_INPUT); ret) {
+    if (int ret = gpio_pin_configure_dt(&fault, GPIO_INPUT)) {
         return ret;
     }
-    if (int ret = gpio_pin_interrupt_configure_dt(&fault, GPIO_INT_EDGE_TO_ACTIVE); ret) {
+    if (int ret = gpio_pin_interrupt_configure_dt(&fault, GPIO_INT_EDGE_TO_ACTIVE)) {
         return ret;
     }
     gpio_init_callback(&fault_callback, on_fault, BIT(fault.pin));
-    if (int ret = gpio_add_callback_dt(&fault, &fault_callback); ret) {
+    if (int ret = gpio_add_callback_dt(&fault, &fault_callback)) {
         return ret;
     }
 

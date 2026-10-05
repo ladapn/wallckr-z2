@@ -118,17 +118,17 @@ int ultrasonic_init()
         }
 
         k_sem_init(&sonar.done, 0, 1);
-        if (int ret = gpio_pin_configure_dt(&sonar.trigger, GPIO_OUTPUT_INACTIVE); ret) {
+        if (int ret = gpio_pin_configure_dt(&sonar.trigger, GPIO_OUTPUT_INACTIVE)) {
             return ret;
         }
-        if (int ret = gpio_pin_configure_dt(&sonar.echo, GPIO_INPUT); ret) {
+        if (int ret = gpio_pin_configure_dt(&sonar.echo, GPIO_INPUT)) {
             return ret;
         }
-        if (int ret = gpio_pin_interrupt_configure_dt(&sonar.echo, GPIO_INT_EDGE_BOTH); ret) {
+        if (int ret = gpio_pin_interrupt_configure_dt(&sonar.echo, GPIO_INT_EDGE_BOTH)) {
             return ret;
         }
         gpio_init_callback(&sonar.callback, on_echo_edge, BIT(sonar.echo.pin));
-        if (int ret = gpio_add_callback_dt(&sonar.echo, &sonar.callback); ret) {
+        if (int ret = gpio_add_callback_dt(&sonar.echo, &sonar.callback)) {
             return ret;
         }
     }

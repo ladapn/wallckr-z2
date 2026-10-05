@@ -59,7 +59,7 @@ int leds_init()
         if (!gpio_is_ready_dt(&led.gpio)) {
             return -ENODEV;
         }
-        if (int ret = gpio_pin_configure_dt(&led.gpio, GPIO_OUTPUT_INACTIVE); ret) {
+        if (int ret = gpio_pin_configure_dt(&led.gpio, GPIO_OUTPUT_INACTIVE)) {
             return ret;
         }
     }

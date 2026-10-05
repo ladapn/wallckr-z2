@@ -9,7 +9,7 @@ const device* const encoder = DEVICE_DT_GET(DT_NODELABEL(encoder));
 
 int cmd_encoder(const shell* sh, size_t, char**)
 {
-    if (int ret = sensor_sample_fetch(encoder); ret) {
+    if (int ret = sensor_sample_fetch(encoder)) {
         shell_error(sh, "Encoder read failed (%d)", ret);
         return ret;
     }

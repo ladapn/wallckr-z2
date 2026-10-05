@@ -29,7 +29,7 @@ int main()
 
     int failures = 0;
     for (const auto& module : modules) {
-        if (int ret = module.init(); ret) {
+        if (int ret = module.init()) {
             LOG_ERR("%s: init failed (%d)", module.name, ret);
             failures++;
         }
