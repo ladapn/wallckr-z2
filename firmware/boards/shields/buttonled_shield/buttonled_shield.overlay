@@ -1,0 +1,50 @@
+/*
+ * wallckr-z2 Button/LED shield, stacked on top of the X-NUCLEO-BNRG2A1 and
+ * reaching the Nucleo through its pass-through Arduino headers.
+ *
+ * Only Arduino pins left free by the BLE shield (A0, A1, D7, D11..D13) and
+ * the motherboard (A2, A3, D5, D10, D14, D15) are used. The buttons sit on
+ * pins whose EXTI lines (5, 7) no other interrupt source uses.
+ */
+
+#include <zephyr/dt-bindings/gpio/arduino-header-r3.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+	/* Active low: LEDs are sourced from 3V3 and the GPIO sinks the current. */
+	status_leds {
+		compatible = "gpio-leds";
+
+		led_state1: led_state1 {
+			gpios = <&arduino_header ARDUINO_HEADER_R3_D2 GPIO_ACTIVE_LOW>; /* PA10 */
+			label = "LED_STATE1 (green)";
+		};
+
+		led_state2: led_state2 {
+			gpios = <&arduino_header ARDUINO_HEADER_R3_D6 GPIO_ACTIVE_LOW>; /* PB10 */
+			label = "LED_STATE2 (green)";
+		};
+
+		led_err: led_err {
+			gpios = <&arduino_header ARDUINO_HEADER_R3_D8 GPIO_ACTIVE_LOW>; /* PA9 */
+			label = "LED_ERR (red)";
+		};
+	};
+
+	/* Active low, external 10k pull-ups to 3V3. */
+	buttons {
+		compatible = "gpio-keys";
+
+		button1: button1 {
+			gpios = <&arduino_header ARDUINO_HEADER_R3_D4 GPIO_ACTIVE_LOW>; /* PB5 */
+			label = "Button 1";
+			zephyr,code = <INPUT_KEY_1>;
+		};
+
+		button2: button2 {
+			gpios = <&arduino_header ARDUINO_HEADER_R3_D9 GPIO_ACTIVE_LOW>; /* PC7 */
+			label = "Button 2";
+			zephyr,code = <INPUT_KEY_2>;
+		};
+	};
+};

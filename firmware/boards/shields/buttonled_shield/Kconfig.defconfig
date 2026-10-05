@@ -1,0 +1,8 @@
+if SHIELD_BUTTONLED_SHIELD
+
+# Buttons are described as gpio-keys; pull in the input subsystem so the
+# gpio-keys driver (debouncing, press/release events) is available.
+config INPUT
+	default y
+
+endif # SHIELD_BUTTONLED_SHIELD

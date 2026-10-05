@@ -1,0 +1,24 @@
+# Same shape as Zephyr's samples/basic/servo_motor binding, which is
+# sample-local and so not visible to out-of-tree applications.
+
+description: PWM-driven RC servo motor.
+
+compatible: "pwm-servo"
+
+include: base.yaml
+
+properties:
+  pwms:
+    required: true
+    type: phandle-array
+    description: PWM specifier driving the servo signal.
+
+  min-pulse:
+    required: true
+    type: int
+    description: Pulse width (nanoseconds) for the 0 degree position.
+
+  max-pulse:
+    required: true
+    type: int
+    description: Pulse width (nanoseconds) for the 180 degree position.

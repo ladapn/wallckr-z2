@@ -1,0 +1,7 @@
+# Makes this repo a Zephyr module, so the custom shields under
+# firmware/boards/shields/ and the bindings under firmware/dts/bindings/
+# are discovered without -DBOARD_ROOT= / -DDTS_ROOT=.
+build:
+  settings:
+    board_root: firmware
+    dts_root: firmware
