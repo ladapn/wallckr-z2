@@ -11,7 +11,7 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
-	/* Active low: the GPIO sinks the LED current from the 5V rail. */
+	/* Active low: LEDs are sourced from 3V3 and the GPIO sinks the current. */
 	status_leds {
 		compatible = "gpio-leds";
 
