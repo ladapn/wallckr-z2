@@ -198,7 +198,7 @@ wallckr-z2-workspace/        ← west workspace root (not a repo)
 - **wallckr-z2** — new repo, contains Zephyr firmware, KiCad hardware design (two projects: motherboard + Button/LED shield), and tools
 - **ovladacka** — to be archived, moved into `wallckr-z2/tools/ovladacka/`
 - **wallckr-common** (future) — shared logic/algorithms extracted as a west module when needed
-- **`firmware/main` vs `firmware/bringup`** — two independent Zephyr applications, each with its own `CMakeLists.txt`/`prj.conf`, sharing the same `boards/`, `lib/` and `west.yml`. `bringup` is standalone hardware bring-up/test firmware (checking peripherals during assembly), kept separate so its settings — shell/console enabled, drivers exercised in isolation, no BLE stack — never leak into the real vehicle firmware in `main`.
+- **`firmware/main` vs `firmware/bringup`** — two independent Zephyr applications, each with its own `CMakeLists.txt`/`prj.conf`, sharing the same `boards/`, `lib/` and `west.yml`. `bringup` is standalone hardware bring-up/test firmware (checking peripherals during assembly), kept separate so its settings — shell/console enabled, drivers exercised in isolation, only a minimal BLE link test (Nordic UART Service heartbeat, no ovladacka protocol) — never leak into the real vehicle firmware in `main`.
 
 ---
 

@@ -8,5 +8,6 @@ int servo_init();
 int ultrasonic_init();
 int analog_init();
 int encoder_init();
+int ble_init();
 
 void leds_self_test();
