@@ -44,6 +44,17 @@ KISS, YAGNI, and SOLID govern implementation choices here — concretely, for th
 
 When a design choice trades simplicity for flexibility, state the tradeoff rather than picking silently — these are a strong default, not a substitute for judgment.
 
+## Git workflow
+
+- **Commit messages:** [Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<optional scope>): <description>`, imperative and lower-case description, no trailing period.
+  - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `ci`, `build`, `chore`, `style`, `perf`.
+  - Scopes, when one fits: `bringup`, `main`, `lib`, `shields`, `tests`, `ci`, `tools`, `docs`, `kicad`.
+  - Breaking changes get `!` after the type/scope and a `BREAKING CHANGE:` footer.
+  - Example: `fix(bringup): compute current-sense divisor in 64 bit`.
+  - PRs are squash-merged, so the PR title is the commit that lands on `main` — it follows the same format.
+- **One element per PR:** each PR carries a single feature, fix, refactor or docs change, whenever that's possible. Something unrelated noticed along the way goes into its own PR (or is raised as a follow-up), not into the current one. When a change genuinely can't be split, say why in the PR description.
+- **Branch names:** `<author>/<short-description>` — the author's GitHub handle (Claude Code uses `claude`), then a few lower-case, hyphenated words, e.g. `ladapn/servo-calibration`, `claude/port-robot-lib`.
+
 ## Notes for the port
 
 - No dynamic allocation on the MCU beyond what Zephyr's kernel objects already use internally — this is the reasoning behind ETL + Minimal C++ Library over full STL.
