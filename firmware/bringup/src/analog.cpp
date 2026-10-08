@@ -47,7 +47,7 @@ int32_t current_ma(int32_t pin_mv)
 {
     // I = V / (Rsense * gain), with Rsense in milliohms.
     return static_cast<int32_t>(int64_t { pin_mv } * 1000 * DT_PROP(CURRENT_NODE, sense_gain_div)
-        / (DT_PROP(CURRENT_NODE, sense_resistor_milli_ohms) * DT_PROP(CURRENT_NODE, sense_gain_mult)));
+        / (int64_t { DT_PROP(CURRENT_NODE, sense_resistor_milli_ohms) } * DT_PROP(CURRENT_NODE, sense_gain_mult)));
 }
 
 int cmd_analog(const shell* sh, size_t, char**)
