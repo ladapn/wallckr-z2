@@ -10,6 +10,7 @@ project(wallckr_bringup LANGUAGES CXX)
 target_sources(app PRIVATE
     src/main.cpp
     src/analog.cpp
+    src/ble.cpp
     src/buttons.cpp
     src/encoder.cpp
     src/leds.cpp

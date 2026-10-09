@@ -16,10 +16,14 @@ manifest:
       remote: zephyrproject-rtos
       revision: v4.4.2
       import:
-        # Only pull the modules nucleo_f401re actually needs, not every HAL.
+        # Only pull the modules the build actually needs, not every HAL.
         name-allowlist:
           - cmsis_6
           - hal_stm32
+          # PSA crypto for the Bluetooth host (selected by BT_HOST_CRYPTO);
+          # mbedtls 4.x keeps the PSA core in tf-psa-crypto.
+          - mbedtls
+          - tf-psa-crypto
 
     - name: etl
       remote: etlcpp

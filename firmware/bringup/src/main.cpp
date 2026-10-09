@@ -19,6 +19,7 @@ constexpr etl::array modules {
     Module { .name = "ultrasonic", .init = ultrasonic_init },
     Module { .name = "analog", .init = analog_init },
     Module { .name = "encoder", .init = encoder_init },
+    Module { .name = "ble", .init = ble_init },
 };
 
 } // namespace
