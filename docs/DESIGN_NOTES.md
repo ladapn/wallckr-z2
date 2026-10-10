@@ -210,7 +210,7 @@ wallckr-z2-workspace/        ← west workspace root (not a repo)
   - *No hardware RNG on the F401* — Zephyr falls back to a timer-based test generator, which isn't good enough for BLE pairing/encryption. The L476 has a TRNG.
   - *Flash for FOTA* — the F401's 512 KB in large sectors (16/64/128 KB) allows only 128 KB MCUboot swap slots; a BLE firmware-update sample alone (~134 KB) already overflows one. The L476's 1 MB in 2 KB pages allows two ~470 KB slots with rollback. On the F401, overwrite-only updates (no rollback, ~192 KB image) would be the fallback.
   - *Motherboard: no PCB change needed* — Morpho and Arduino pinouts match, and the timer (PA15, PB4, PB6/PB7), SPI1 and ADC (PB1, PC5) functions exist on the same pins.
-  - *Only loss:* the L476 has no USART6, so Sensor 4's PA11/PA12 UART option goes away; UART5 on the free PC12/PD2 (J11/3, J11/4) is the alternative.
+  - *Only loss:* the L476 has no USART6, so Sensor 4's PA11/PA12 UART option (which reused J5, no hardware change) goes away. UART5 on PC12/PD2 (J11/3, J11/4) would be the alternative, but those pins aren't routed on the motherboard — it would need bodge wires or a header in a future PCB revision.
   - *To check first:* 5V tolerance of the L476 pins receiving 5V signals (sensor ECHO lines, encoder inputs). Firmware changes (ADC channel numbers, 80 MHz timer prescaler, board-specific shield overlays) are software-only.
 
 ---
