@@ -14,7 +14,7 @@ Guidance for AI-assisted (Claude Code) work in this repo — porting wallckr (v1
 
 ## Toolchain
 
-- **RTOS:** Zephyr, pinned to latest stable (4.4.0 as of writing — reconfirm at https://docs.zephyrproject.org/latest/releases/ before assuming, since a new stable ships roughly every April/October).
+- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.4.2, the latest stable when pinned — reconfirm at https://docs.zephyrproject.org/latest/releases/ before assuming, since a new stable ships roughly every April/October).
 - **Board:** no custom board — base board is the existing upstream `nucleo_f401re`. Everything wallckr-z2 adds is modeled as Zephyr shields instead of a custom board, combined at build time via multiple `--shield` args:
   - `x_nucleo_bnrg2a1` — the BLE shield. Already exists upstream in Zephyr; nothing to write for this one.
   - `motherboard_shield` (new) — Morpho-connector shield for the custom motherboard (motor, sensors, servo, power/current sensing, encoder). Confirmed: `nucleo_f401re`'s devicetree already exposes the `st_morpho_header` GPIO nexus node, so this shield can reference Morpho pins the normal way — no extra devicetree work needed just to get the connector recognized.
@@ -24,7 +24,7 @@ Guidance for AI-assisted (Claude Code) work in this repo — porting wallckr (v1
   - `west build -b nucleo_f401re --shield motherboard_shield --shield x_nucleo_bnrg2a1 --shield buttonled_shield firmware/main`
   - same, with `firmware/bringup` in place of `firmware/main`
   - `west flash`
-- **Shared code:** `firmware/lib/` holds the target-independent logic reused from v1's `lib/` (`Robot`, control, battery/sensing logic, protocol decoding, and the six interfaces). It must not include Zephyr or board headers, so it can be built by `main`, `bringup` and the Ztest suites alike. Zephyr-specific implementations of the interfaces live in the app that uses them, not in `lib/`.
+- **Shared code:** `firmware/lib/` holds the target-independent logic reused from v1's `lib/` (`Robot`, control, battery/sensing logic, protocol decoding, and the seven interfaces). It must not include Zephyr or board headers, so it can be built by `main`, `bringup` and the Ztest suites alike. Zephyr-specific implementations of the interfaces live in the app that uses them, not in `lib/`.
 - **Tests:** Ztest suites live in `firmware/tests/`, run on `native_sim` with `west twister -p native_sim -T firmware/tests`.
 
 ## Language & style
@@ -40,7 +40,7 @@ KISS, YAGNI, and SOLID govern implementation choices here — concretely, for th
 
 - **YAGNI** — don't add configurability, abstraction, or generality beyond what wallckr-z2 actually needs right now. The closed-loop-control follow-on (see "Motor control" below) stays out of the initial port rather than being pre-built as a toggleable option; a second board variant isn't a design concern until one is actually planned.
 - **KISS** — prefer the simplest implementation that satisfies the interface and the behavior being preserved over a "more flexible" one nobody asked for. This is also the reasoning behind Minimal C++ Library + ETL over a heavier alternative, and `native_sim`-only testing over chasing full hardware emulation.
-- **SOLID** — v1's PORTING.md already gives a clean interface boundary (the six interfaces below); keep to it rather than growing new cross-cutting abstractions. Each target-specific implementation (e.g. the Zephyr `IMotorController`) should depend only on what it needs to do its one job.
+- **SOLID** — v1's PORTING.md already gives a clean interface boundary (the seven interfaces below); keep to it rather than growing new cross-cutting abstractions. Each target-specific implementation (e.g. the Zephyr `IMotorController`) should depend only on what it needs to do its one job.
 
 When a design choice trades simplicity for flexibility, state the tradeoff rather than picking silently — these are a strong default, not a substitute for judgment.
 
@@ -62,20 +62,23 @@ When a design choice trades simplicity for flexibility, state the tradeoff rathe
 
 ## Porting reference (from v1's PORTING.md)
 
-Reimplement these six target-specific interfaces for Zephyr; everything else in v1's `lib/` (control logic, protocol decoding, the `Robot` state machine) is meant to be reused unchanged:
+Reimplement these seven target-specific interfaces for Zephyr (v1's PORTING.md lists six, but `Battery` also needs an `ICurrentSensor`); everything else in v1's `lib/` (control logic, protocol decoding, the `Robot` state machine) is meant to be reused unchanged:
 
 - `IMotorController`, `ISteeringServo` — currently `lib/MotionArduino` (`<Arduino.h>`, `<Servo.h>`)
 - `IBatterySensor` — currently `lib/BatteryArduino` (Arduino ADC read)
 - `IDistanceSensor` — currently `lib/SensingArduino` (`<NewPing.h>`)
 - `IRobotIndicators` — currently `lib/CommunicationArduino`
+- `ICurrentSensor` — also currently `lib/BatteryArduino` (total robot current, passed to `Battery`)
 - `IRobotIOStream` — used both for the BLE command stream and outgoing telemetry, also currently in `lib/CommunicationArduino`
 - Pin assignments (`lib/BoardConfig`) — replaced by the shield devicetree overlays under `firmware/boards/shields/` (`motherboard_shield`, `buttonled_shield`)
 
 Write a new entry point wiring these into `Robot` the way v1's `src/main.cpp` does.
 
 **Known wrinkles carried over from v1's own porting notes — worth re-reading before assuming a straight port:**
-- `lib/Motion/MotionConstants.h` (servo min/max/center, max speed) and the battery cell-count/cutoff constants in `src/main.cpp` are target-independent *files* but V1-specific *values* — they'll compile and pass tests unchanged, but need re-tuning for wallckr-z2's actual servo/motor/battery.
-- `TimeManager` and the `PollingRobotRunner` super-loop (`while(true)` + manual millis-based polling) are a bare-metal scheduling stand-in, not something to port as-is — on Zephyr, timer callbacks, work queues, or dedicated threads calling `robot.perform_status_check()` / `perform_automatic_action()` at the right periods are the natural replacement.
+- `lib/Motion/MotionConstants.h` (servo min/max/center, max speed) and the battery cell-count/cutoff constants in `src/main.cpp` are target-independent *files* but V1-specific *values* — they'll compile and pass tests unchanged, but need re-tuning for wallckr-z2's actual servo/motor/battery. Concretely: the battery voltage divider factor changes from 16 to 5, and the Zephyr `IBatterySensor` must keep v1's meaning (mV at the ADC pin) so `Battery` works unchanged; `ICurrentSensor` converts the INA169 output as mV ÷ 1.65 (v1's circuit was 1 mV = 1 mA). The servo keeps v1's 544–2400 µs mapping, so its constants should carry over unless the steering linkage changed.
+- **Scheduling — not decided yet.** v1's `PollingRobotRunner` super-loop calls `robot.check_external_command()` and `robot.apply_motion_command()` on *every* pass, `perform_status_check()` every 1000 ms and `perform_automatic_action()` every 100 ms (`TimeManager`). Constraints for the Zephyr replacement: timer callbacks run in interrupt context, while the automatic step blocks on ultrasonic measurements, so they're out; `Robot` was written for a single loop and isn't thread-safe, so splitting these calls across threads needs locking. Running v1's loop (reusing `TimeManager`) in one thread with a short sleep instead of the busy-wait is the behavior-identical option.
+- **Ultrasonic timeout** — v1's NewPing stops waiting at the 200 cm maximum (~12 ms per sensor), and the automatic step reads three sensors every 100 ms. The Zephyr `IDistanceSensor` must do the same (stop at ~12 ms and report the maximum) rather than wait out the HY-SRF05's ~30 ms out-of-range echo, as the bring-up firmware's `sonar` command does.
+- **Formatting** — v1 uses a 2-space LLVM-like style, so its files fail the WebKit clang-format gate as-is. Port them as a verbatim-copy commit followed by a reformat-only commit, so behavior review stays easy. Extend the CI clang-tidy gate to `firmware/lib/` (it currently covers app sources only), accepting small behavior-neutral fixes it asks for.
 - v1's tests use PlatformIO + Unity on a `native` host build; Zephyr should use Ztest + Twister instead. Assert macros translate roughly 1:1, but test registration differs enough (manual `RUN_TEST()` vs. auto-discovered `ZTEST()`) that porting a test file means rewriting it against Ztest, not sharing the file between frameworks.
 
 ## Features to preserve (from v1's README)
@@ -83,7 +86,8 @@ Write a new entry point wiring these into `Robot` the way v1's `src/main.cpp` do
 - **Wall following** — holds a target distance from the right-hand wall using a steering-angle controller driven by the front-right and right distance sensors. P controller is the default; PD also exists but isn't used by default.
 - **Obstacle avoidance** — entered when the front or front-right sensor reads below its threshold, exited back to wall-following once both clear their own (larger) recovery thresholds — i.e. front > 60cm **and** front-right > 25cm. (v1's README currently says "less than" for the recovery condition; that's a typo being fixed upstream, not the actual behavior — go with "greater than.")
 - **Motor control** — open-loop by design in v1 (no speed feedback, so it slows on inclines or as the battery sags). wallckr-z2 adds a quadrature encoder v1 never had; closed-loop speed control is the planned **first new feature after the port** — keep the port itself open-loop/behavior-matching, and treat closed-loop control as separate follow-on work rather than folding it into the initial port.
-- **BLE communication** — via the ovladacka protocol: accepts remote commands, sends back distance measurements and status telemetry.
+- **BLE communication** — via the ovladacka protocol: accepts remote commands, sends back distance measurements and status telemetry. Transport is the Nordic UART Service (as in the bring-up BLE test), with the protocol's byte stream carried over its RX/TX characteristics. ovladacka currently uses a single HM-10-style characteristic for both directions; it will be updated to NUS rather than the firmware emulating HM-10.
+- **Distance sensors** — three, as in v1: front = J4 (Sensor 3), right-front = J3 (Sensor 2), right = J2 (Sensor 1, v1's "right center"). J5 (Sensor 4) stays a spare and is unused by the port.
 - **Status LEDs** — v1 drove 5 LEDs on its connection shield (LED1 = wall-following, LED2 = obstacle-avoiding, LED3/4 = always unused, LED5 = blinking low-battery warning) plus 1 green "alive" LED on the power board. wallckr-z2's Button/LED shield has only 3 MCU-controlled LEDs plus the fixed power LED — LED3/4 were unused in v1 too, so nothing is actually lost. Mapping: `LED_STATE1`↔LED1, `LED_STATE2`↔LED2, `LED_ERR`↔LED5, `LED_PWR`↔v1's power LED.
 - **Buttons** — not a v1 feature: v1's PORTING.md doesn't include a button/input interface because v1 never actually used its buttons. Treat button behavior (mode switching, calibration, debug) as new functionality to design for wallckr-z2, not something being ported from existing v1 logic.
 
@@ -93,5 +97,5 @@ Confirmed from the actual workflow (runs on `pull_request` only, `ubuntu-26.04`)
 
 - **Build** — `pio run -e megaatmega2560`. Zephyr equivalent: `west build` for both `firmware/main` and `firmware/bringup` — both should gate CI, not just one, since they're independent applications now.
 - **Tests** — `pio test --without-uploading`, which ran *two* test environments in v1: a host-only `native` one (target-independent `lib/` code, per PORTING.md's Testing section above) **and** an AVR-target one executed under **simavr emulation** (catches things a pure host build can't — real memory layout, real toolchain codegen, target-specific code). Decision: wallckr-z2 sticks to **Twister on `native_sim` only** — no emulated-target equivalent to simavr. This is a real reduction in coverage for target-specific code (no substitute for actually flashing `firmware/bringup` and checking on hardware), accepted as a reasonable tradeoff rather than chasing an equivalent that doesn't cleanly exist for STM32F401RE.
-- **Static analysis** — `pio check --skip-packages -e megaatmega2560`, scoped to the real target build. Replacement: **clang-tidy**, scoped to the real board build (not just `native_sim`), covering `firmware/main` and `firmware/bringup` `.cpp`/`.h` sources the same way v1 scoped to `megaatmega2560`. Needs a `.clang-tidy` config at the repo root and a `compile_commands.json` — Zephyr/CMake can generate that (`west build` passes through to CMake, which supports `CMAKE_EXPORT_COMPILE_COMMANDS=ON`) so clang-tidy sees the actual Zephyr include paths/defines rather than guessing them.
+- **Static analysis** — `pio check --skip-packages -e megaatmega2560`, scoped to the real target build. Replacement: **clang-tidy**, scoped to the real board build (not just `native_sim`), covering `firmware/main`, `firmware/bringup` and `firmware/lib` `.cpp`/`.h` sources the same way v1 scoped to `megaatmega2560`. Needs a `.clang-tidy` config at the repo root and a `compile_commands.json` — Zephyr/CMake can generate that (`west build` passes through to CMake, which supports `CMAKE_EXPORT_COMPILE_COMMANDS=ON`) so clang-tidy sees the actual Zephyr include paths/defines rather than guessing them.
 - **Code formatting** — `clang-format==22.1.5 --dry-run -Werror` over every `.cpp`/`.h` in `lib`, `src`, `test`. Carry this gate over as-is, just pointed at wallckr-z2's paths and a WebKit-style `.clang-format` instead of v1's config. Worth pinning the same clang-format version (22.1.5) unless there's a specific reason to bump it — keeps formatting-rule drift out of the picture while porting.

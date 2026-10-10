@@ -39,7 +39,7 @@ with Ackermann (car-like) steering that follows walls and avoids obstacles.
 | Voltage regulator 2 | L7806 | 6V for servo — lower dropout vs 5V rail saves heat |
 | Drive motor | GM37 300 RPM DC | Carried over from v1 |
 | Steering servo | Hitec HS-422 | Carried over from v1, runs on 6V |
-| Distance sensors | HY-SRF05 x4 | Front, front-right, right, + one more — schematic confirms 4 sensor headers (v1 had 3; this note was stale) |
+| Distance sensors | HY-SRF05 x3 (+1 spare header) | Same three as v1: front = J4 (Sensor 3), front-right = J3 (Sensor 2), right = J2 (Sensor 1). J5 (Sensor 4) is a spare header, unused by the firmware for now |
 | BLE | X-NUCLEO-BNRG2A1 | ST BLE shield, stacks on top of Nucleo via Arduino headers |
 | Encoder | Custom quadrature | Two Hall probes on GM37 motor — connects via J10 on motherboard (5-pin: 5V, GND, Ch A, Ch B + 1 spare) |
 | Button/LED shield | Custom small shield (new) | Stacks on top of the X-NUCLEO-BNRG2A1 BLE shield, connecting through the same Arduino header pins (pass-through stacking). Carries all buttons and MCU-controlled LEDs — everything except the fixed "alive" power LED, which stays on the motherboard. **Deliberately has no ground plane**, to minimize copper near the BLE shield that could obstruct/detune the antenna. |
@@ -149,7 +149,7 @@ Bus separation is now: Morpho carries all motherboard-native signals (motor, sen
 
 ## Firmware
 
-- **RTOS:** Zephyr, pinned to latest stable (4.4.0, released 2026-04-14 — reconfirm at docs.zephyrproject.org/latest/releases before assuming, since a new stable ships roughly every April/October)
+- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.4.2, the latest stable when pinned — reconfirm at docs.zephyrproject.org/latest/releases before assuming, since a new stable ships roughly every April/October)
 - **MCU:** STM32F401RE (Nucleo board)
 - **BLE stack:** via X-NUCLEO-BNRG2A1, using Zephyr's BLE/HCI support
 - **Language/style/libraries:** C++23, WebKit code style, Embedded Template Library (ETL) — see `CLAUDE.md` for the concrete Kconfig/toolchain setup
