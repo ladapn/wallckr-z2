@@ -206,6 +206,13 @@ wallckr-z2-workspace/        ← west workspace root (not a repo)
 
 - **Schematic R1 value is wrong** — the schematic (and PCB file) say R1 = 360k, but the board carries 300k (verified), matching the 1/5 divider described under Design Decisions. Firmware uses 300k; the schematic needs correcting.
 - **ovladacka repo migration** — not yet done. Still lives in its own repo; needs moving into `wallckr-z2/tools/ovladacka/`.
+- **Plan B: Nucleo-L476RG instead of the F401RE** — not planned yet, but the fallback if either limit below starts to bite:
+  - *No hardware RNG on the F401* — Zephyr falls back to a timer-based test generator, which isn't good enough for BLE pairing/encryption. The L476 has a TRNG.
+  - *Flash for FOTA* — the F401's 512 KB in large sectors (16/64/128 KB) allows only 128 KB MCUboot swap slots; a BLE firmware-update sample alone (~134 KB) already overflows one. The L476's 1 MB in 2 KB pages allows two ~470 KB slots with rollback. On the F401, overwrite-only updates (no rollback, ~192 KB image) would be the fallback.
+  - *Motherboard: no PCB change needed* — Morpho and Arduino pinouts match, and the timer (PA15, PB4, PB6/PB7), SPI1 and ADC (PB1, PC5) functions exist on the same pins.
+  - *Only loss:* the L476 has no USART6, so Sensor 4's PA11/PA12 UART option (which reused J5, no hardware change) goes away. UART5 on PC12/PD2 (J11/3, J11/4) would be the alternative, but those pins aren't routed on the motherboard — it would need bodge wires or a header in a future PCB revision.
+  - *Next PCB revision (L476 only):* route J5 to PC12/PD2 to keep Sensor 4's GPIO-or-UART dual use — **ECHO → PC12** (EXTI 12, free; UART5 TX) and **TRIG → PD2** (UART5 RX). PD2 can't take ECHO: EXTI 2 is already Sensor 3's ECHO (PC2). As today, the connector's ECHO/TRIG pins become TX/RX in UART mode. Check PC12's 5V tolerance for the ECHO signal.
+  - *To check first:* 5V tolerance of the L476 pins receiving 5V signals (sensor ECHO lines, encoder inputs). Firmware changes (ADC channel numbers, 80 MHz timer prescaler, board-specific shield overlays) are software-only.
 
 ---
 
