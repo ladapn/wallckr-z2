@@ -206,6 +206,12 @@ wallckr-z2-workspace/        ← west workspace root (not a repo)
 
 - **Schematic R1 value is wrong** — the schematic (and PCB file) say R1 = 360k, but the board carries 300k (verified), matching the 1/5 divider described under Design Decisions. Firmware uses 300k; the schematic needs correcting.
 - **ovladacka repo migration** — not yet done. Still lives in its own repo; needs moving into `wallckr-z2/tools/ovladacka/`.
+- **Plan B: Nucleo-L476RG instead of the F401RE** — not planned yet, but the fallback if either limit below starts to bite:
+  - *No hardware RNG on the F401* — Zephyr falls back to a timer-based test generator, which isn't good enough for BLE pairing/encryption. The L476 has a TRNG.
+  - *Flash for FOTA* — the F401's 512 KB in large sectors (16/64/128 KB) allows only 128 KB MCUboot swap slots; a BLE firmware-update sample alone (~134 KB) already overflows one. The L476's 1 MB in 2 KB pages allows two ~470 KB slots with rollback. On the F401, overwrite-only updates (no rollback, ~192 KB image) would be the fallback.
+  - *Motherboard: no PCB change needed* — Morpho and Arduino pinouts match, and the timer (PA15, PB4, PB6/PB7), SPI1 and ADC (PB1, PC5) functions exist on the same pins.
+  - *Only loss:* the L476 has no USART6, so Sensor 4's PA11/PA12 UART option goes away; UART5 on the free PC12/PD2 (J11/3, J11/4) is the alternative.
+  - *To check first:* 5V tolerance of the L476 pins receiving 5V signals (sensor ECHO lines, encoder inputs). Firmware changes (ADC channel numbers, 80 MHz timer prescaler, board-specific shield overlays) are software-only.
 
 ---
 
