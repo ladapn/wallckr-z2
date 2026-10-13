@@ -62,7 +62,7 @@ When a design choice trades simplicity for flexibility, state the tradeoff rathe
 
 ## Porting reference (from v1's PORTING.md)
 
-Reimplement these seven target-specific interfaces for Zephyr (v1's PORTING.md lists six, but `Battery` also needs an `ICurrentSensor`); everything else in v1's `lib/` (control logic, protocol decoding, the `Robot` state machine) is meant to be reused unchanged:
+Reimplement these seven target-specific interfaces for Zephyr; everything else in v1's `lib/` (control logic, protocol decoding, the `Robot` state machine) is meant to be reused unchanged:
 
 - `IMotorController`, `ISteeringServo` — currently `lib/MotionArduino` (`<Arduino.h>`, `<Servo.h>`)
 - `IBatterySensor` — currently `lib/BatteryArduino` (Arduino ADC read)
