@@ -37,7 +37,7 @@ class Sensing {
 
     RobotPrinter& sensor_printer;
 
-    bool disabled;
+    bool disabled = false;
 
 public:
     /**
@@ -52,8 +52,7 @@ public:
      */
     Sensing(DistanceSensors& distance_sensors, RobotPrinter& printer)
         : sensors(distance_sensors)
-        , sensor_printer(printer)
-        , disabled(false) { };
+        , sensor_printer(printer) { };
 
     /**
      * Measure side distance to wall or obstacle, also obtained measurements are

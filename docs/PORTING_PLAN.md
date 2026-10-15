@@ -34,7 +34,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     - a `west twister -p native_sim -T firmware/tests` CI job.
   - Library and tests land together: until `firmware/main` exists, the tests
     are the only thing that compiles `lib/` in CI.
-- [ ] **2. `feat(main): add the vehicle firmware skeleton`**
+- [x] **2. `feat(main): add the vehicle firmware skeleton`**
   - `prj.conf` (C++23, minimal libcpp, ETL, BT/NUS, GPIO, PWM, ADC), a `main.cpp`
     that only boots and logs, `VERSION`, and linking `lib/`.
   - CI: `main` joins the build matrix, and clang-tidy is extended to

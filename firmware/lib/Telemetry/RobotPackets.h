@@ -7,7 +7,7 @@
 /**
  * enum defining all possible IDs of ultrasound measurement packets
  */
-enum us_packet_ids {
+enum us_packet_ids : uint8_t {
     FRONT_US_ID = 100,
     RIGHT_FRONT_US_ID = 101,
     RIGHT_CENTER_US_ID = 102,
@@ -16,7 +16,7 @@ enum us_packet_ids {
 /**
  * enum defining all possible IDs of utility packets
  */
-enum util_packet_ids { STATUS_ID = 80,
+enum util_packet_ids : uint8_t { STATUS_ID = 80,
     MOTION_CMD_ID = 90 };
 
 /**

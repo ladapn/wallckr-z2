@@ -1,9 +1,11 @@
 #ifndef INPUT_STREAM_PARSER_H
 #define INPUT_STREAM_PARSER_H
 
+#include <stdint.h>
+
 class IRobotIOStream;
 
-enum class JoystickCommand {
+enum class JoystickCommand : uint8_t {
     NO_COMMAND = 0,
     UP,
     RIGHT,
@@ -72,6 +74,8 @@ protected:
             break;
         case 'h':
             command = JoystickCommand::LEFT_SQUARE;
+            break;
+        default:
             break;
         }
 
