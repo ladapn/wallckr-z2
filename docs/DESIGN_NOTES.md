@@ -88,7 +88,7 @@ Bus separation is now: Morpho carries all motherboard-native signals (motor, sen
 
 | Nucleo Pin | Function | Connector | Notes |
 |---|---|---|---|
-| PA15 | EN — motor speed PWM | J11/17 | TIM2_CH1 (alt mapping) |
+| PA15 | EN — motor speed PWM | J11/17 | TIM2_CH1 (alt mapping). Pulled up while the MCU is in reset, which runs the motor — see Known Open Items |
 | PB8 | PH — motor direction | J12/3 | Plain GPIO |
 | PB9 | FLT — motor fault in | J12/5 | Open-drain, pull-up R4 (10k) to MCU_3V3 |
 | PB4 | Servo PWM | J12/27 | TIM3_CH1 (alt mapping) |
@@ -205,13 +205,17 @@ wallckr-z2-workspace/        ← west workspace root (not a repo)
 ## Known Open Items
 
 - **Schematic R1 value is wrong** — the schematic (and PCB file) say R1 = 360k, but the board carries 300k (verified), matching the 1/5 divider described under Design Decisions. Firmware uses 300k; the schematic needs correcting.
+- **Motor runs while the MCU is in reset** — observed in bring-up: the motor spins while the Nucleo's reset button is held, and for a few seconds after a battery-only power-up (not with USB connected). Cause: after reset PA15 is the JTAG JTDI pin with its internal pull-up (~30–50 kΩ) enabled, and it stays that way until the PWM driver claims it. The DRV8874's own pull-down on EN is weaker, so EN reads high and the motor runs at full speed. PH (PB8) floats and the DRV8874 pulls it low, so the motor should run backward (not yet checked). The battery power-up case lasts seconds because `nucleo_f401re` clocks the MCU from the ST-LINK's 8 MHz output (HSE bypass), and clock setup waits for it before any driver runs. The same happens during `west flash`, which holds reset, and briefly after any watchdog or fault reset. Firmware can't fix this, since no code runs during reset.
+  - *Current board:* fit a 4.7 kΩ pull-down from EN to GND, e.g. across the EN and GND pins of the J6/J9 carrier header. Against the pull-up's worst case of ~30 kΩ it keeps EN below ~0.45 V, at ~0.7 mA while the PWM is high.
+  - *Next PCB revision:* add the pull-down on the motherboard, or move EN off PA15. The L476 has the same JTDI pull-up on PA15 (see Plan B below).
+  - *Not done:* switching the clock to the internal HSI would shorten the power-up case to milliseconds, but wouldn't help during reset; not needed once the pull-down is fitted.
 - **ovladacka repo migration** — not yet done. Still lives in its own repo; needs moving into `wallckr-z2/tools/ovladacka/`.
 - **Plan B: Nucleo-L476RG instead of the F401RE** — not planned yet, but the fallback if either limit below starts to bite:
   - *No hardware RNG on the F401* — Zephyr falls back to a timer-based test generator, which isn't good enough for BLE pairing/encryption. The L476 has a TRNG.
   - *Flash for FOTA* — the F401's 512 KB in large sectors (16/64/128 KB) allows only 128 KB MCUboot swap slots; a BLE firmware-update sample alone (~134 KB) already overflows one. The L476's 1 MB in 2 KB pages allows two ~470 KB slots with rollback. On the F401, overwrite-only updates (no rollback, ~192 KB image) would be the fallback.
   - *Motherboard: no PCB change needed* — Morpho and Arduino pinouts match, and the timer (PA15, PB4, PB6/PB7), SPI1 and ADC (PB1, PC5) functions exist on the same pins.
   - *Only loss:* the L476 has no USART6, so Sensor 4's PA11/PA12 UART option (which reused J5, no hardware change) goes away. UART5 on PC12/PD2 (J11/3, J11/4) would be the alternative, but those pins aren't routed on the motherboard — it would need bodge wires or a header in a future PCB revision.
-  - *Next PCB revision (L476 only):* route J5 to PC12/PD2 to keep Sensor 4's GPIO-or-UART dual use — **ECHO → PC12** (EXTI 12, free; UART5 TX) and **TRIG → PD2** (UART5 RX). PD2 can't take ECHO: EXTI 2 is already Sensor 3's ECHO (PC2). As today, the connector's ECHO/TRIG pins become TX/RX in UART mode. Check PC12's 5V tolerance for the ECHO signal.
+  - *Next PCB revision (L476 only):* add the motor EN pull-down (PA15 is pulled up during reset on the L476 too, see above). Route J5 to PC12/PD2 to keep Sensor 4's GPIO-or-UART dual use — **ECHO → PC12** (EXTI 12, free; UART5 TX) and **TRIG → PD2** (UART5 RX). PD2 can't take ECHO: EXTI 2 is already Sensor 3's ECHO (PC2). As today, the connector's ECHO/TRIG pins become TX/RX in UART mode. Check PC12's 5V tolerance for the ECHO signal.
   - *To check first:* 5V tolerance of the L476 pins receiving 5V signals (sensor ECHO lines, encoder inputs). Firmware changes (ADC channel numbers, 80 MHz timer prescaler, board-specific shield overlays) are software-only.
 
 ---
