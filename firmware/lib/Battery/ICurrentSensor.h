@@ -9,13 +9,13 @@
  */
 class ICurrentSensor {
 public:
-  /**
-   * Method to get sensed current in milliamps
-   * @return current reading in mA
-   */
-  virtual uint16_t get_current_mA() = 0;
+    /**
+     * Method to get sensed current in milliamps
+     * @return current reading in mA
+     */
+    virtual uint16_t get_current_mA() = 0;
 
-  virtual ~ICurrentSensor() = default;
+    virtual ~ICurrentSensor() = default;
 };
 
 #endif // ICURRENTSENSOR_H

@@ -8,9 +8,9 @@
  * steering servo angle and flag to enable automatic operation
  */
 struct RobotCommand {
-  int desired_speed = 0;
-  int desired_servo_angle = SERVO_CENTER;
-  bool enable_automatic_operation = true;
+    int desired_speed = 0;
+    int desired_servo_angle = SERVO_CENTER;
+    bool enable_automatic_operation = true;
 };
 
 #endif

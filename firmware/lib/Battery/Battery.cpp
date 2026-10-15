@@ -10,31 +10,31 @@ namespace {
 constexpr uint16_t MOTOR_CURRENT_NOT_MEASURED_mA = 0xFFFF;
 } // namespace
 
-bool Battery::is_ok(uint32_t current_millis) {
-  // TODO: add filtering
-  auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
+bool Battery::is_ok(uint32_t current_millis)
+{
+    // TODO: add filtering
+    auto battery_voltage_mVDC = battery_sensor.get_battery_voltage_mVDC();
 
-  StatusPacket status_data(current_millis, battery_voltage_mVDC,
-                           current_sensor.get_current_mA(),
-                           MOTOR_CURRENT_NOT_MEASURED_mA);
+    StatusPacket status_data(current_millis, battery_voltage_mVDC,
+        current_sensor.get_current_mA(),
+        MOTOR_CURRENT_NOT_MEASURED_mA);
 
-  battery_printer.print(status_data);
+    battery_printer.print(status_data);
 
-  if (battery_dead) {
-    if (battery_voltage_mVDC >
-        (cutoff_mVDC + hysteresis_mVDC)) // Add some hysteresis
-    {
-      battery_dead = false;
-      return true;
+    if (battery_dead) {
+        if (battery_voltage_mVDC > (cutoff_mVDC + hysteresis_mVDC)) // Add some hysteresis
+        {
+            battery_dead = false;
+            return true;
+        }
+
+        return false;
     }
 
-    return false;
-  }
+    if (battery_voltage_mVDC <= cutoff_mVDC) {
+        battery_dead = true;
+        return false;
+    }
 
-  if (battery_voltage_mVDC <= cutoff_mVDC) {
-    battery_dead = true;
-    return false;
-  }
-
-  return true;
+    return true;
 }
