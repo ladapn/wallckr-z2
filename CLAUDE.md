@@ -10,6 +10,7 @@ Guidance for AI-assisted (Claude Code) work in this repo — porting wallckr (v1
   - Check **"Known Open Items"** before assuming a hardware detail is final.
 - v1 firmware (Arduino/C++), the source of truth for *behavior* being ported: https://github.com/ladapn/wallckr — design notes cover the hardware side only, not what the firmware actually does.
 - v1's porting guide: https://github.com/ladapn/wallckr/blob/master/PORTING.md — defines the hardware abstraction boundary (which interfaces to reimplement vs. reuse unchanged). Read this before starting any porting work; summarized below so it doesn't have to be re-fetched every session, but the original is the source of truth if it's updated.
+- `docs/PORTING_PLAN.md` — the order of porting work (one PR per step) and the decisions taken for it. Check which steps are done before starting porting work.
 - v1's README feature list — summarized in "Features to preserve" below; describes the behavior the port needs to keep, not just the code structure.
 
 ## Toolchain
