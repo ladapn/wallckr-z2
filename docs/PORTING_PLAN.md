@@ -23,7 +23,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
 
 ## Steps
 
-- [ ] **1. `feat(lib): import v1's target-independent library`**
+- [x] **1. `feat(lib): import v1's target-independent library`**
   - Commits:
     - verbatim copy of v1's portable folders;
     - reformat only;
