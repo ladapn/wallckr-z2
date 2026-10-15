@@ -21,6 +21,7 @@ public:
     template <typename PacketType>
     size_t print(const PacketType& packet)
     {
+        // NOLINTNEXTLINE(modernize-avoid-c-arrays): no std::array in the minimal C++ library
         uint8_t buffer[PacketType::SERIALIZED_SIZE];
         if (!packet.serialize(buffer, PacketType::SERIALIZED_SIZE)) {
             return 0;
