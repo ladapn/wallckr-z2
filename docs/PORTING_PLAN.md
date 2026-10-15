@@ -40,7 +40,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - CI: `main` joins the build matrix, and clang-tidy is extended to
     `firmware/lib`. This is the first board build that compiles `lib/`. Small
     behavior-neutral fixes clang-tidy asks for are accepted.
-- [ ] **3. `feat(main): add the motor and servo adapters`**
+- [x] **3. `feat(main): add the motor and servo adapters`**
   - Motor (DRV8874): EN is PWM at 25 kHz with duty = |speed| / 255, PH sets the
     direction. Out-of-range speeds return `false`. `stop()` sets the duty to 0
     and leaves PH alone, as in v1. nFAULT is ignored, as v1 had nothing like it.

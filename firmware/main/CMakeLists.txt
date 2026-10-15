@@ -12,6 +12,8 @@ target_link_libraries(app PRIVATE wallckr_lib)
 
 target_sources(app PRIVATE
     src/main.cpp
+    src/ZephyrMotorController.cpp
+    src/ZephyrSteeringServo.cpp
 )
 
 # The minimal C++ library has no STL headers; ETL must not reach for them.
