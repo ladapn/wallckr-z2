@@ -2,11 +2,11 @@
 # tests. Each consumer adds it after find_package(Zephyr):
 #   add_subdirectory(<path to firmware/lib> wallckr_lib)
 #   target_link_libraries(app PRIVATE wallckr_lib)
-# As a Zephyr library it is built with the same compiler flags as the app.
 
-zephyr_library_named(wallckr_lib)
-
-zephyr_library_sources(
+# A plain static library: zephyr_library_named() is meant for Zephyr modules
+# and warns when an application calls it. Linking zephyr_interface gives it
+# the same compiler flags as the app.
+add_library(wallckr_lib STATIC
     Battery/Battery.cpp
     Communication/ExternalCommandDecoder.cpp
     Motion/Motion.cpp
@@ -14,6 +14,7 @@ zephyr_library_sources(
     Telemetry/RobotPackets.cpp
     Telemetry/RobotPrinter.cpp
 )
+target_link_libraries(wallckr_lib PUBLIC zephyr_interface)
 
 target_include_directories(wallckr_lib PUBLIC
     Battery
