@@ -1,0 +1,8 @@
+common:
+  tags: lib
+  platform_allow:
+    - native_sim
+  integration_platforms:
+    - native_sim
+tests:
+  wallckr.lib: {}

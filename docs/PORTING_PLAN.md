@@ -10,7 +10,7 @@ and the decisions made along the way. Tick a step off when its PR merges.
 ```
 firmware/lib/     v1's target-independent folders, same names: Battery, Control,
                   Communication, IOStream, Motion, Robot, Sensing, Telemetry;
-                  lib.cmake lists their sources and include directories
+                  CMakeLists.txt builds them as a library apps and tests link
 firmware/main/    the vehicle app: prj.conf, CMakeLists.txt, VERSION,
                   src/ with the Zephyr adapters and main.cpp
 firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in common/
@@ -23,11 +23,11 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
 
 ## Steps
 
-- [ ] **1. `feat(lib): import v1's target-independent library`**
+- [x] **1. `feat(lib): import v1's target-independent library`**
   - Commits:
     - verbatim copy of v1's portable folders;
     - reformat only;
-    - `lib.cmake`;
+    - `CMakeLists.txt`, building them as a library;
     - firmware version from Zephyr's `VERSION` file (see below);
     - the v1 suites rewritten against Ztest: battery, command decoder,
       robot packets, auto-steering, filter, regulator, robot;
@@ -95,7 +95,7 @@ hardware until step 8 wires them in.
   they're checked on hardware.
 - **Firmware version:** v1 sent the git short hash (`GIT_REV`, from
   `git_rev_macro.py`) as `StatusPacket::version_ID`. wallckr-z2 uses Zephyr's
-  application `VERSION` file instead: `lib.cmake` passes the build's
+  application `VERSION` file instead: the library's `CMakeLists.txt` passes the build's
   `APPVERSION` (`0xMMmmppTT`: major, minor, patch, tweak) to `lib/` as a
   compile definition, so `lib/` still includes no Zephyr headers. Builds
   without a `VERSION` file (the tests) get 0. ovladacka shows this field, so
