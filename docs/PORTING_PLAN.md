@@ -131,4 +131,16 @@ These are the next steps once the port is done, not part of it:
   it in telemetry;
 - button behavior (mode switching, calibration, debug);
 - the spare J5 sensor;
-- BLE pairing and encryption.
+- BLE pairing and encryption;
+- a modern C++ sweep of `firmware/lib` and the adapters, done in one pass
+  rather than one finding at a time:
+  - survey: clang-tidy with a wide check set (`modernize`, `readability`,
+    `cppcoreguidelines`, `misc`, `performance`, `bugprone`), including the
+    header-only files, plus a manual pass for what it doesn't flag: plain
+    `const` constants in headers such as `MotionConstants.h` (namespace,
+    `constexpr`), `unsigned long` where a fixed-width type fits, trailing
+    `{ };` after function bodies;
+  - decide per category whether to adopt it or skip it as a policy choice
+    (e.g. reference data members holding dependencies are the design);
+  - one category per PR, adding each adopted check to `.clang-tidy` so CI
+    keeps it fixed.
