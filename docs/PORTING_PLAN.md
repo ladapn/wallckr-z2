@@ -45,7 +45,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     direction. Out-of-range speeds return `false`. `stop()` sets the duty to 0
     and leaves PH alone, as in v1. nFAULT is ignored, as v1 had nothing like it.
   - Servo: 0–180° maps to 544–2400 µs, as in bring-up and v1's Arduino `Servo`.
-- [ ] **4. `feat(main): add the ultrasonic distance adapter`**
+- [x] **4. `feat(main): add the ultrasonic distance adapter`**
   - Echo edges timestamped from the GPIO interrupt, as in bring-up, but the
     wait stops at ~12 ms (200 cm × 57 µs/cm). A timeout or missing echo
     reports 200 cm, as v1 did with NewPing's 0.
@@ -53,7 +53,10 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     complete the next ping.
   - The filtered reading uses `ExpFilter<int, 4>` inside the adapter, as v1's
     `ArduinoUltraSoundSensor` does.
-  - Worst case for three sensors is ~36 ms of the 100 ms tick.
+  - As in NewPing, a ping also waits up to 5.8 ms for the echo to start. So
+    three out-of-range sensors take ~36 ms of the 100 ms tick, and the
+    theoretical worst case (every echo starting late, then running out of
+    range) is ~52 ms.
 - [ ] **5. `feat(main): add the battery and current adapters`**
   - Battery: mV at the ADC pin (`adc_raw_to_millivolts_dt`), keeping v1's
     meaning so `Battery` works unchanged. `get_battery_voltage_adc()` now
