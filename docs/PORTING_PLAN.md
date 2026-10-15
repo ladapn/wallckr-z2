@@ -126,6 +126,9 @@ None of them can be checked on hardware until step 9 wires them in.
 These are the next steps once the port is done, not part of it:
 
 - closed-loop speed control using the encoder;
+- motor driver fault handling (DRV8874 nFAULT on PB9: overcurrent,
+  overtemperature, undervoltage): log it, show it on the ERR LED and/or report
+  it in telemetry;
 - button behavior (mode switching, calibration, debug);
 - the spare J5 sensor;
 - BLE pairing and encryption.
