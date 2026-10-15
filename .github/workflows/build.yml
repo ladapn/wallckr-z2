@@ -25,8 +25,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Add main once firmware/main exists.
-        app: [bringup]
+        include:
+          - app: bringup
+            tidy-sources: "'firmware/bringup/*.cpp'"
+          # firmware/lib is first compiled for the board by main, so it is
+          # checked there.
+          - app: main
+            tidy-sources: "'firmware/main/*.cpp' 'firmware/lib/*.cpp'"
     steps:
       # The repo is the west manifest repository, so it is checked out one
       # level below the workspace root (see docs/DESIGN_NOTES.md).
@@ -56,7 +61,7 @@ jobs:
       - name: Static analysis
         working-directory: wallckr-z2
         run: >
-          git ls-files -z 'firmware/${{ matrix.app }}/*.cpp'
+          git ls-files -z ${{ matrix.tidy-sources }}
           | xargs -0 python3 tools/clang_tidy.py ../build/${{ matrix.app }}
 
   tests:
