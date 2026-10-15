@@ -63,7 +63,7 @@ struct StatusPacket {
     static constexpr size_t SERIALIZED_SIZE = 16;
     uint8_t id = STATUS_ID;
     uint32_t tick;
-    uint32_t version_ID = WALLCKR_VERSION; // see lib.cmake
+    uint32_t version_ID = WALLCKR_VERSION; // see firmware/lib/CMakeLists.txt
     uint16_t battery_voltage_mvdc;
     uint16_t total_current_mA;
     uint16_t motor_current_mA;
