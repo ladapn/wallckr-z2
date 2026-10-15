@@ -63,14 +63,26 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - Same logic as v1: STATE1/STATE2 show following/avoiding, ERR toggles on
     every battery warning (v1's 0.5 Hz blink). Polarity comes from the
     devicetree flags.
-- [ ] **7. `feat(main): add the NUS command and telemetry stream`**
+- [ ] **7. `refactor(lib): use etl::array and etl::span for packets`**
+  - Packet buffers become `etl::array`, and `serialize()` takes a
+    fixed-size `etl::span<uint8_t, SERIALIZED_SIZE>`, so the compiler checks
+    buffer sizes. That removes `RobotPrinter`'s `NOLINT`, its zero-size
+    guard, and the null/size checks in each `serialize()`.
+  - `IRobotIOStream::write(uint8_t*, size_t)` becomes
+    `write(etl::span<const uint8_t>)`. This step comes before the NUS adapter
+    so that adapter is written once, against the new interface.
+  - `lib/` now depends on ETL (header-only and target-independent):
+    `firmware/lib/CMakeLists.txt` links it and sets `ETL_NO_STL` publicly.
+  - Behavior-neutral: the wire format and the unit tests' expected bytes
+    stay the same.
+- [ ] **8. `feat(main): add the NUS command and telemetry stream`**
   - The NUS receive callback copies bytes into a spinlock-guarded ring buffer
     and posts COMMAND; `available()`/`read()` drain it from the control thread.
   - `write()` calls `bt_nus_send(NULL, ...)` and drops the packet when nobody
     is subscribed. Packets are 10 or 16 bytes, so each fits in one
     notification at the default MTU.
   - Advertises as `wallckr`, the name v1 set with `AT NAME`.
-- [ ] **8. `feat(main): wire the robot and control thread`**
+- [ ] **9. `feat(main): wire the robot and control thread`**
   - Builds the objects the way v1's `loop()` does.
   - One thread waits on TICK (a 100 ms `k_timer`) or COMMAND. Every wake
     drains the command stream first. On TICK it runs
@@ -81,8 +93,8 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - First hardware check of the whole port: wall following and avoiding,
     ovladacka control, low-battery cutoff from a bench supply.
 
-Steps 3–7 are separate PRs for easier review. None of them can be checked on
-hardware until step 8 wires them in.
+Steps 3–6 and 8 add one adapter each, as separate PRs for easier review.
+None of them can be checked on hardware until step 9 wires them in.
 
 ## Decisions
 
