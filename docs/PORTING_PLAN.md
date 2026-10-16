@@ -78,7 +78,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     `firmware/lib/CMakeLists.txt` links it and sets `ETL_NO_STL` publicly.
   - Behavior-neutral: the wire format and the unit tests' expected bytes
     stay the same.
-- [ ] **8. `feat(main): add the NUS command and telemetry stream`**
+- [x] **8. `feat(main): add the NUS command and telemetry stream`**
   - The NUS receive callback copies bytes into a spinlock-guarded ring buffer
     and posts COMMAND; `available()`/`read()` drain it from the control thread.
   - `write()` calls `bt_nus_send(NULL, ...)` and drops the packet when nobody
