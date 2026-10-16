@@ -62,7 +62,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     meaning so `Battery` works unchanged. `get_battery_voltage_adc()` now
     returns 12-bit raw values; only test stubs call it.
   - Current: pin mV × 20 / 33 (÷ 1.65 in integer maths).
-- [ ] **6. `feat(main): add the status LED adapter`**
+- [x] **6. `feat(main): add the status LED adapter`**
   - Same logic as v1: STATE1/STATE2 show following/avoiding, ERR toggles on
     every battery warning (v1's 0.5 Hz blink). Polarity comes from the
     devicetree flags.
