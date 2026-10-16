@@ -18,11 +18,17 @@ target_link_libraries(wallckr_lib PUBLIC zephyr_interface)
 
 # ETL is header-only and target-independent; consumers enable it with
 # CONFIG_ETL=y. The minimal C++ library has no STL headers, so ETL must not
-# reach for them. Its <new> is only a stub without placement new, so ETL
-# must define that itself (ETL_USING_STD_NEW=0) for containers that construct
-# elements in place, such as etl::circular_buffer.
+# reach for them.
 target_link_libraries(wallckr_lib PUBLIC etl::etl)
-target_compile_definitions(wallckr_lib PUBLIC ETL_NO_STL ETL_USING_STD_NEW=0)
+target_compile_definitions(wallckr_lib PUBLIC ETL_NO_STL)
+
+# The minimal C++ library's <new> is a stub without placement new, so ETL
+# defines it itself (ETL_USING_STD_NEW=0) for containers that construct
+# elements in place, such as etl::circular_buffer. A full C++ library brings
+# its own placement new, which ETL's would then clash with.
+if(CONFIG_MINIMAL_LIBCPP)
+    target_compile_definitions(wallckr_lib PUBLIC ETL_USING_STD_NEW=0)
+endif()
 
 target_include_directories(wallckr_lib PUBLIC
     Battery
