@@ -57,7 +57,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     three out-of-range sensors take ~36 ms of the 100 ms tick, and the
     theoretical worst case (every echo starting late, then running out of
     range) is ~52 ms.
-- [ ] **5. `feat(main): add the battery and current adapters`**
+- [x] **5. `feat(main): add the battery and current adapters`**
   - Battery: mV at the ADC pin (`adc_raw_to_millivolts_dt`), keeping v1's
     meaning so `Battery` works unchanged. `get_battery_voltage_adc()` now
     returns 12-bit raw values; only test stubs call it.
