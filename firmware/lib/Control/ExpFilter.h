@@ -28,13 +28,12 @@ template <typename T, int N>
 class ExpFilter : public IFilter<T> {
 private:
     T m_state;
-    bool m_first_step;
+    bool m_first_step = true;
     T core(T input) { return ExpFilterMath::compute<T, N>(input, m_state); }
 
 public:
     ExpFilter()
-        : m_state(0)
-        , m_first_step(true) { };
+        : m_state(0) { };
     /**
      * Get next filter output value
      * @param[in] input filters input for current step

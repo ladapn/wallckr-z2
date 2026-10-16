@@ -14,6 +14,7 @@ target_sources(app PRIVATE
     src/main.cpp
     src/ZephyrMotorController.cpp
     src/ZephyrSteeringServo.cpp
+    src/ZephyrUltrasonicSensor.cpp
 )
 
 # The minimal C++ library has no STL headers; ETL must not reach for them.
