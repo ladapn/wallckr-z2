@@ -14,6 +14,7 @@ target_sources(app PRIVATE
     src/main.cpp
     src/ZephyrAnalogSensors.cpp
     src/ZephyrMotorController.cpp
+    src/ZephyrNusStream.cpp
     src/ZephyrRobotIndicators.cpp
     src/ZephyrSteeringServo.cpp
     src/ZephyrUltrasonicSensor.cpp
