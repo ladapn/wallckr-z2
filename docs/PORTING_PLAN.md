@@ -66,7 +66,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - Same logic as v1: STATE1/STATE2 show following/avoiding, ERR toggles on
     every battery warning (v1's 0.5 Hz blink). Polarity comes from the
     devicetree flags.
-- [ ] **7. `refactor(lib): use etl::array and etl::span for packets`**
+- [x] **7. `refactor(lib): use etl::array and etl::span for packets`**
   - Packet buffers become `etl::array`, and `serialize()` takes a
     fixed-size `etl::span<uint8_t, SERIALIZED_SIZE>`, so the compiler checks
     buffer sizes. That removes `RobotPrinter`'s `NOLINT`, its zero-size
