@@ -13,3 +13,7 @@ Checks: >
 WarningsAsErrors: '*'
 # Only report on our own headers, not Zephyr/ETL/HAL ones.
 HeaderFilterRegex: '.*/wallckr-z2/firmware/.*'
+CheckOptions:
+  # Spans are views, meant to be passed by value like pointers.
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'etl::span'

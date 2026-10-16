@@ -1,6 +1,7 @@
 #ifndef ROBOT_PACKETS_H
 #define ROBOT_PACKETS_H
 
+#include <etl/span.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -47,12 +48,10 @@ struct SonarPacket {
     /**
      * Serialize packet fields in the wire format. CRC field is reserved for
      * RobotPrinter.
-     * @param[out] buffer chunk of data to hold serialized packet
-     * @param[in] buffer_size size of buffer in bytes, it should be at least
-     * SERIALIZED_SIZE
-     * @return true if serialization was successful, false otherwise
+     * @param[out] buffer exactly SERIALIZED_SIZE bytes to hold the serialized
+     * packet
      */
-    bool serialize(uint8_t* buffer, size_t buffer_size) const;
+    void serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const;
 };
 
 /**
@@ -89,12 +88,10 @@ struct StatusPacket {
     /**
      * Serialize packet fields in the wire format. CRC field is reserved for
      * RobotPrinter.
-     * @param[out] buffer chunk of data to hold serialized packet
-     * @param[in] buffer_size size of buffer in bytes, it should be at least
-     * SERIALIZED_SIZE
-     * @return true if serialization was successful, false otherwise
+     * @param[out] buffer exactly SERIALIZED_SIZE bytes to hold the serialized
+     * packet
      */
-    bool serialize(uint8_t* buffer, size_t buffer_size) const;
+    void serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const;
 };
 
 /**
@@ -126,12 +123,10 @@ struct MotionCommandPacket {
     /**
      * Serialize packet fields in the wire format. CRC field is reserved for
      * RobotPrinter.
-     * @param[out] buffer chunk of data to hold serialized packet
-     * @param[in] buffer_size size of buffer in bytes, it should be at least
-     * SERIALIZED_SIZE
-     * @return true if serialization was successful, false otherwise
+     * @param[out] buffer exactly SERIALIZED_SIZE bytes to hold the serialized
+     * packet
      */
-    bool serialize(uint8_t* buffer, size_t buffer_size) const;
+    void serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const;
 };
 
 #endif

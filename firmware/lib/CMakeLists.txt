@@ -16,6 +16,12 @@ add_library(wallckr_lib STATIC
 )
 target_link_libraries(wallckr_lib PUBLIC zephyr_interface)
 
+# ETL is header-only and target-independent; consumers enable it with
+# CONFIG_ETL=y. The minimal C++ library has no STL headers, so ETL must not
+# reach for them.
+target_link_libraries(wallckr_lib PUBLIC etl::etl)
+target_compile_definitions(wallckr_lib PUBLIC ETL_NO_STL)
+
 target_include_directories(wallckr_lib PUBLIC
     Battery
     Communication
