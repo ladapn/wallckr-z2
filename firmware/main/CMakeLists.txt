@@ -12,6 +12,7 @@ target_link_libraries(app PRIVATE wallckr_lib)
 
 target_sources(app PRIVATE
     src/main.cpp
+    src/ZephyrAnalogSensors.cpp
     src/ZephyrMotorController.cpp
     src/ZephyrSteeringServo.cpp
     src/ZephyrUltrasonicSensor.cpp
