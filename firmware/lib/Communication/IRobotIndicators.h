@@ -1,7 +1,9 @@
 #ifndef IROBOT_INDICATORS_H
 #define IROBOT_INDICATORS_H
 
-enum class RobotIndicatorState {
+#include <stdint.h>
+
+enum class RobotIndicatorState : uint8_t {
     IDLE = 0,
     MOVING_AVOIDING,
     MOVING_FOLLOWING,
