@@ -23,7 +23,7 @@ public:
      */
     SimulatedUART(char* in, int len)
     {
-        write(reinterpret_cast<uint8_t*>(in), len);
+        write(etl::span<const uint8_t>(reinterpret_cast<const uint8_t*>(in), len));
     }
 
     /**
@@ -51,14 +51,13 @@ public:
 
     /**
      * Write into internal buffer
-     * @param buffer_in data to be written
-     * @param size size of the data in bytes
+     * @param data data to be written
      */
-    size_t write(uint8_t* buffer_in, size_t size) override
+    size_t write(etl::span<const uint8_t> data) override
     {
-        data_len = (buffer_len_max < size) ? buffer_len_max : size;
+        data_len = (buffer_len_max < data.size()) ? buffer_len_max : data.size();
         for (int i = 0; i < data_len; i++) {
-            buffer[i] = buffer_in[i];
+            buffer[i] = data[i];
         }
 
         return data_len;

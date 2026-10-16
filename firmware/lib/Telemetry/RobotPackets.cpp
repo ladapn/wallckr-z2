@@ -1,80 +1,63 @@
 #include "RobotPackets.h"
 
 namespace {
-void append_uint8(uint8_t* buffer, size_t& offset, uint8_t value)
-{
-    buffer[offset++] = value;
-}
+/**
+ * Appends little-endian fields to a packet buffer
+ */
+class PacketWriter {
+    etl::span<uint8_t> buffer;
+    size_t offset = 0;
 
-void append_uint16_le(uint8_t* buffer, size_t& offset, uint16_t value)
-{
-    buffer[offset++] = static_cast<uint8_t>(value);
-    buffer[offset++] = static_cast<uint8_t>(value >> 8);
-}
+public:
+    explicit PacketWriter(etl::span<uint8_t> buffer)
+        : buffer(buffer)
+    {
+    }
 
-void append_uint32_le(uint8_t* buffer, size_t& offset, uint32_t value)
-{
-    buffer[offset++] = static_cast<uint8_t>(value);
-    buffer[offset++] = static_cast<uint8_t>(value >> 8);
-    buffer[offset++] = static_cast<uint8_t>(value >> 16);
-    buffer[offset++] = static_cast<uint8_t>(value >> 24);
-}
+    void append_uint8(uint8_t value) { buffer[offset++] = value; }
+
+    void append_uint16_le(uint16_t value)
+    {
+        append_uint8(static_cast<uint8_t>(value));
+        append_uint8(static_cast<uint8_t>(value >> 8));
+    }
+
+    void append_uint32_le(uint32_t value)
+    {
+        append_uint16_le(static_cast<uint16_t>(value));
+        append_uint16_le(static_cast<uint16_t>(value >> 16));
+    }
+};
 } // namespace
 
-bool SonarPacket::serialize(uint8_t* buffer, size_t buffer_size) const
+void SonarPacket::serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const
 {
-    if (buffer == nullptr || buffer_size < SERIALIZED_SIZE) {
-        return false;
-    }
-
-    size_t offset = 0;
-    append_uint8(buffer, offset, id);
-    append_uint32_le(buffer, offset, tick);
-    append_uint32_le(buffer, offset, sonar_data);
-    append_uint8(
-        buffer, offset,
-        0); // CRC is reserved for RobotPrinter - it will be overwritten there
-
-    return true;
+    PacketWriter writer(buffer);
+    writer.append_uint8(id);
+    writer.append_uint32_le(tick);
+    writer.append_uint32_le(sonar_data);
+    writer.append_uint8(0); // CRC is reserved for RobotPrinter - it will be overwritten there
 }
 
-bool StatusPacket::serialize(uint8_t* buffer, size_t buffer_size) const
+void StatusPacket::serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const
 {
-    if (buffer == nullptr || buffer_size < SERIALIZED_SIZE) {
-        return false;
-    }
-
-    size_t offset = 0;
-    append_uint8(buffer, offset, id);
-    append_uint32_le(buffer, offset, tick);
-    append_uint32_le(buffer, offset, version_ID);
-    append_uint16_le(buffer, offset, battery_voltage_mvdc);
-    append_uint16_le(buffer, offset, total_current_mA);
-    append_uint16_le(buffer, offset, motor_current_mA);
-    append_uint8(
-        buffer, offset,
-        0); // CRC is reserved for RobotPrinter - it will be overwritten there
-
-    return true;
+    PacketWriter writer(buffer);
+    writer.append_uint8(id);
+    writer.append_uint32_le(tick);
+    writer.append_uint32_le(version_ID);
+    writer.append_uint16_le(battery_voltage_mvdc);
+    writer.append_uint16_le(total_current_mA);
+    writer.append_uint16_le(motor_current_mA);
+    writer.append_uint8(0); // CRC is reserved for RobotPrinter - it will be overwritten there
 }
 
-bool MotionCommandPacket::serialize(uint8_t* buffer, size_t buffer_size) const
+void MotionCommandPacket::serialize(etl::span<uint8_t, SERIALIZED_SIZE> buffer) const
 {
-    if (buffer == nullptr || buffer_size < SERIALIZED_SIZE) {
-        return false;
-    }
-
-    size_t offset = 0;
-    append_uint8(buffer, offset, id);
-    append_uint32_le(buffer, offset, tick);
-    append_uint16_le(buffer, offset, servo_cmd);
-    append_uint16_le(
-        buffer, offset,
-        static_cast<uint16_t>(
-            motor_cmd)); // cast int16 to uint16 for little-endian bytes
-    append_uint8(
-        buffer, offset,
-        0); // CRC is reserved for RobotPrinter - it will be overwritten there
-
-    return true;
+    PacketWriter writer(buffer);
+    writer.append_uint8(id);
+    writer.append_uint32_le(tick);
+    writer.append_uint16_le(servo_cmd);
+    // cast int16 to uint16 for little-endian bytes
+    writer.append_uint16_le(static_cast<uint16_t>(motor_cmd));
+    writer.append_uint8(0); // CRC is reserved for RobotPrinter - it will be overwritten there
 }

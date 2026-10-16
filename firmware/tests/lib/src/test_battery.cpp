@@ -39,12 +39,12 @@ public:
         bytes_written++;
         return 1;
     }
-    size_t write(uint8_t* data, size_t size) override
+    size_t write(etl::span<const uint8_t> data) override
     {
-        for (size_t i = 0; i < size; i++) {
-            write(data[i]);
+        for (auto byte : data) {
+            write(byte);
         }
-        return size;
+        return data.size();
     }
 };
 

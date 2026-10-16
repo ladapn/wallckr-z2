@@ -1,16 +1,17 @@
 #ifndef ROBOT_PRINTER_H
 #define ROBOT_PRINTER_H
 
+#include "IRobotIOStream.h"
+
+#include <etl/array.h>
+#include <etl/span.h>
 #include <stddef.h>
 #include <stdint.h>
-
-class IRobotIOStream;
 
 class RobotPrinter {
     IRobotIOStream& robot_serial;
 
-    uint8_t compute_xor_CRC(const uint8_t* buffer, size_t size);
-    size_t write_serialized(uint8_t* buffer, size_t size);
+    static uint8_t compute_xor_CRC(etl::span<const uint8_t> data);
 
 public:
     explicit RobotPrinter(IRobotIOStream& serial)
@@ -21,13 +22,14 @@ public:
     template <typename PacketType>
     size_t print(const PacketType& packet)
     {
-        // NOLINTNEXTLINE(modernize-avoid-c-arrays): no std::array in the minimal C++ library
-        uint8_t buffer[PacketType::SERIALIZED_SIZE];
-        if (!packet.serialize(buffer, PacketType::SERIALIZED_SIZE)) {
-            return 0;
-        }
+        static_assert(PacketType::SERIALIZED_SIZE > 1, "a packet holds at least its ID and CRC");
 
-        return write_serialized(buffer, PacketType::SERIALIZED_SIZE);
+        etl::array<uint8_t, PacketType::SERIALIZED_SIZE> buffer { };
+        packet.serialize(buffer);
+        // The last byte is the CRC over all the others.
+        buffer.back() = compute_xor_CRC(etl::span<const uint8_t>(buffer).first(buffer.size() - 1));
+
+        return robot_serial.write(buffer);
     }
 };
 
