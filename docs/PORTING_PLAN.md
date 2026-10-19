@@ -87,14 +87,19 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     leaves as one notification instead of three or four. ovladacka parses a
     byte stream, so packets may span notifications.
   - Advertises as `wallckr`, the name v1 set with `AT NAME`.
-- [ ] **9. `feat(main): wire the robot and control thread`**
-  - Builds the objects the way v1's `loop()` does.
-  - One thread waits on TICK (a 100 ms `k_timer`) or COMMAND. Every wake
+- [x] **9. `feat(main): wire the robot and control thread`**
+  - Builds the objects the way v1's `loop()` does, as locals of `main()`.
+  - The main thread is the control thread, so no separate thread is created;
+    its stack grows to 4 KB for the objects and the driver calls below them.
+  - It waits on TICK (a 100 ms `k_timer`) or COMMAND. Every wake
     drains the command stream first. On TICK it runs
     `perform_automatic_action()`, plus `perform_status_check()` on ticks
     0, 10, 20, ..., so the first check runs at boot as in v1. Every wake ends
     with `apply_motion_command()` and the NUS stream's `flush()`.
   - Constants (see below).
+  - If any adapter fails to initialize, `main()` logs which one and sleeps
+    forever, so the robot doesn't run. It doesn't return, because callbacks
+    already registered point at its objects.
   - First hardware check of the whole port: wall following and avoiding,
     ovladacka control, low-battery cutoff from a bench supply.
 
