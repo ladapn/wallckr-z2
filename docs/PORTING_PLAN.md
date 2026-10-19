@@ -79,7 +79,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - Behavior-neutral: the wire format and the unit tests' expected bytes
     stay the same.
 - [x] **8. `feat(main): add the NUS command and telemetry stream`**
-  - The NUS receive callback copies bytes into a spinlock-guarded ring buffer
+  - The NUS receive callback copies bytes into a mutex-guarded ring buffer
     and posts COMMAND; `available()`/`read()` drain it from the control thread.
   - `write()` queues packets in an MTU-sized buffer and `flush()` sends it as
     one notification; data is dropped while nobody is subscribed. With the

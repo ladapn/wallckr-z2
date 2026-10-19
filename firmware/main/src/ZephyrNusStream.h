@@ -37,7 +37,11 @@ class ZephyrNusStream : public IRobotIOStream {
     k_event& events;
     uint32_t command_event;
 
-    k_spinlock lock { };
+    // Guards rx_buffer between the Bluetooth RX thread (on_received) and the
+    // control thread. Both are threads, so a mutex suffices and, unlike a
+    // spinlock, never masks interrupts (which would delay the ultrasonic echo
+    // timestamps).
+    k_mutex rx_lock { };
     etl::circular_buffer<uint8_t, RX_BUFFER_SIZE> rx_buffer;
     atomic_t notifications_enabled = ATOMIC_INIT(0);
     bt_nus_cb nus_callbacks { };

@@ -72,11 +72,11 @@ void ZephyrNusStream::on_received(bt_conn*, const void* data, uint16_t length, v
     auto* stream = static_cast<ZephyrNusStream*>(context);
     etl::span<const uint8_t> bytes(static_cast<const uint8_t*>(data), length);
 
-    k_spinlock_key_t key = k_spin_lock(&stream->lock);
+    k_mutex_lock(&stream->rx_lock, K_FOREVER);
     for (auto byte : bytes) {
         stream->rx_buffer.push(byte);
     }
-    k_spin_unlock(&stream->lock, key);
+    k_mutex_unlock(&stream->rx_lock);
 
     k_event_post(&stream->events, stream->command_event);
 }
@@ -104,6 +104,8 @@ void ZephyrNusStream::on_mtu_updated(bt_conn*, uint16_t tx, uint16_t)
 
 int ZephyrNusStream::init()
 {
+    k_mutex_init(&rx_lock);
+
     mtu_listener = this;
     gatt_callbacks.att_mtu_updated = on_mtu_updated;
     bt_gatt_cb_register(&gatt_callbacks);
@@ -122,9 +124,9 @@ int ZephyrNusStream::init()
 
 int ZephyrNusStream::available()
 {
-    k_spinlock_key_t key = k_spin_lock(&lock);
+    k_mutex_lock(&rx_lock, K_FOREVER);
     auto count = static_cast<int>(rx_buffer.size());
-    k_spin_unlock(&lock, key);
+    k_mutex_unlock(&rx_lock);
     return count;
 }
 
@@ -132,12 +134,12 @@ int ZephyrNusStream::read()
 {
     int byte = -1;
 
-    k_spinlock_key_t key = k_spin_lock(&lock);
+    k_mutex_lock(&rx_lock, K_FOREVER);
     if (!rx_buffer.empty()) {
         byte = rx_buffer.front();
         rx_buffer.pop();
     }
-    k_spin_unlock(&lock, key);
+    k_mutex_unlock(&rx_lock);
 
     return byte;
 }
