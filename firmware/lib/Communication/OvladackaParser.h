@@ -4,7 +4,7 @@
 #include "IRobotIOStream.h"
 #include "InputStreamParser.h"
 
-enum class OvladackaParserState {
+enum class OvladackaParserState : uint8_t {
     WAITING_FOR_START = 0,
     WAITING_FOR_CMD,
     WAITING_FOR_ACK

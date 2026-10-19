@@ -17,7 +17,7 @@
  * responds to direct speed/steering commands. See RobotCommand for the
  * decoded external command that toggles it.
  */
-enum class RobotState { MANUAL,
+enum class RobotState : uint8_t { MANUAL,
     AUTOMATIC };
 
 /**

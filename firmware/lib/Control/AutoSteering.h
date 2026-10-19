@@ -6,7 +6,7 @@
 #include "Regulator.h"
 #include "Sensing.h"
 
-enum class SteeringState { AVOIDING = 0,
+enum class SteeringState : uint8_t { AVOIDING = 0,
     FOLLOWING };
 
 template <typename T>
