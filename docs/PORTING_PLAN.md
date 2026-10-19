@@ -81,9 +81,11 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
 - [x] **8. `feat(main): add the NUS command and telemetry stream`**
   - The NUS receive callback copies bytes into a spinlock-guarded ring buffer
     and posts COMMAND; `available()`/`read()` drain it from the control thread.
-  - `write()` calls `bt_nus_send(NULL, ...)` and drops the packet when nobody
-    is subscribed. Packets are 10 or 16 bytes, so each fits in one
-    notification at the default MTU.
+  - `write()` queues packets in an MTU-sized buffer and `flush()` sends it as
+    one notification; data is dropped while nobody is subscribed. With the
+    247-byte ATT MTU `prj.conf` allows, a tick's telemetry (up to 46 bytes)
+    leaves as one notification instead of three or four. ovladacka parses a
+    byte stream, so packets may span notifications.
   - Advertises as `wallckr`, the name v1 set with `AT NAME`.
 - [ ] **9. `feat(main): wire the robot and control thread`**
   - Builds the objects the way v1's `loop()` does.
@@ -91,7 +93,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     drains the command stream first. On TICK it runs
     `perform_automatic_action()`, plus `perform_status_check()` on ticks
     0, 10, 20, ..., so the first check runs at boot as in v1. Every wake ends
-    with `apply_motion_command()`.
+    with `apply_motion_command()` and the NUS stream's `flush()`.
   - Constants (see below).
   - First hardware check of the whole port: wall following and avoiding,
     ovladacka control, low-battery cutoff from a bench supply.
