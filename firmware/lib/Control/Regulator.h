@@ -106,7 +106,7 @@ template <typename T>
 class Regulator_PD : public Regulator<T> {
 protected:
     T m_D_gain;
-    bool m_first_run;
+    bool m_first_run = true;
     T m_last_e;
     /**
      * Compute PD regulator equation
@@ -144,7 +144,6 @@ public:
         : Regulator<T>(gain, setpoint, insen, action_limit_up,
               action_limit_bottom)
         , m_D_gain(D_gain)
-        , m_first_run(true)
         , m_last_e(0) { };
 };
 
