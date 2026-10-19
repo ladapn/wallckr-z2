@@ -103,7 +103,7 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
   - First hardware check of the whole port: wall following and avoiding,
     ovladacka control (once step 10 is done), low-battery cutoff from a bench
     supply.
-- [ ] **10. ovladacka: connect over NUS** (in
+- [x] **10. ovladacka: connect over NUS** (in
   [ladapn/ovladacka](https://github.com/ladapn/ovladacka))
   - ovladacka writes commands to and subscribes to the same characteristic,
     HM-10 style. NUS splits them: commands go to RX (`6E400002-...`),
