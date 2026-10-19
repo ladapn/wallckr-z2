@@ -101,7 +101,21 @@ firmware/tests/   one Ztest suite per v1 test suite, a fake IRobotIOStream in co
     forever, so the robot doesn't run. It doesn't return, because callbacks
     already registered point at its objects.
   - First hardware check of the whole port: wall following and avoiding,
-    ovladacka control, low-battery cutoff from a bench supply.
+    ovladacka control (once step 10 is done), low-battery cutoff from a bench
+    supply.
+- [ ] **10. ovladacka: connect over NUS** (in
+  [ladapn/ovladacka](https://github.com/ladapn/ovladacka))
+  - ovladacka writes commands to and subscribes to the same characteristic,
+    HM-10 style. NUS splits them: commands go to RX (`6E400002-...`),
+    telemetry comes as notifications on TX (`6E400003-...`).
+  - `connection.json` takes either `char_uuid` (HM-10, v1) or `rx_char_uuid`
+    and `tx_char_uuid` (NUS, wallckr-z2), so v1 can still be driven.
+  - The robot is found by scanning for its name (`wallckr`, the same on v1
+    and wallckr-z2); a configured address is optional and used when given.
+    The firmware has no settings storage, so if the BlueNRG-2 has no public
+    address, Zephyr picks a new random static address on every boot.
+  - Without it, ovladacka can't control wallckr-z2, so step 9's ovladacka
+    check waits for it.
 
 Steps 3–6 and 8 add one adapter each, as separate PRs for easier review.
 None of them can be checked on hardware until step 9 wires them in.
