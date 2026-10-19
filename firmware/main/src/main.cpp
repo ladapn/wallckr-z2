@@ -139,7 +139,10 @@ int main()
         uint32_t events = k_event_wait_safe(&control_events, TICK_EVENT | COMMAND_EVENT, false, K_FOREVER);
 
         // The parser takes at most 10 bytes per call; drain them all now
-        // rather than leaving the rest for the next tick.
+        // rather than leaving the rest for the next tick. This always ends:
+        // bytes only arrive from the Bluetooth RX thread, which has a lower
+        // priority than this one (CONFIG_BT_RX_PRIO > CONFIG_MAIN_THREAD_PRIORITY)
+        // and so can't add any while the loop runs.
         while (nus_stream.available() > 0) {
             robot.check_external_command();
         }
