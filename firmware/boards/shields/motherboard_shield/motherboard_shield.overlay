@@ -119,10 +119,12 @@
 		pinctrl-0 = <&tim4_ch1_pb6 &tim4_ch2_pb7>;
 		pinctrl-names = "default";
 		st,input-filter-level = <15>;
-		/* Placeholder until the custom encoder is characterised on the
-		 * real motor; only raw counts are used for now.
+		/* x4: count both edges of both channels. */
+		st,encoder-mode = <3>;
+		/* Per gearbox output revolution: 20 counts per motor revolution
+		 * (x4) times the 19:1 gearbox.
 		 */
-		st,counts-per-revolution = <4>;
+		st,counts-per-revolution = <380>;
 	};
 };
 
