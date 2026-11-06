@@ -15,7 +15,7 @@ Guidance for AI-assisted (Claude Code) work in this repo — porting wallckr (v1
 
 ## Toolchain
 
-- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.4.2, the latest stable when pinned — reconfirm at https://docs.zephyrproject.org/latest/releases/ before assuming, since a new stable ships roughly every April/October).
+- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.5.0, the latest stable when pinned — reconfirm at https://docs.zephyrproject.org/latest/releases/ before assuming, since a new stable ships roughly every April/October).
 - **Board:** no custom board — base board is the existing upstream `nucleo_f401re`. Everything wallckr-z2 adds is modeled as Zephyr shields instead of a custom board, combined at build time via multiple `--shield` args:
   - `x_nucleo_bnrg2a1` — the BLE shield. Already exists upstream in Zephyr; nothing to write for this one.
   - `motherboard_shield` (new) — Morpho-connector shield for the custom motherboard (motor, sensors, servo, power/current sensing, encoder). Confirmed: `nucleo_f401re`'s devicetree already exposes the `st_morpho_header` GPIO nexus node, so this shield can reference Morpho pins the normal way — no extra devicetree work needed just to get the connector recognized.
