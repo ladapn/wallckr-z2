@@ -15,7 +15,7 @@
 #include "ZephyrSteeringServo.h"
 #include "ZephyrUltrasonicSensor.h"
 
-#include <app_version.h>
+#include <zephyr/app_version.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 

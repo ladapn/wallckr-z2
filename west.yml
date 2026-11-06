@@ -14,7 +14,7 @@ manifest:
   projects:
     - name: zephyr
       remote: zephyrproject-rtos
-      revision: v4.4.2
+      revision: v4.5.0
       import:
         # Only pull the modules the build actually needs, not every HAL.
         name-allowlist:

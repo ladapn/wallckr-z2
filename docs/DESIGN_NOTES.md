@@ -149,7 +149,7 @@ Bus separation is now: Morpho carries all motherboard-native signals (motor, sen
 
 ## Firmware
 
-- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.4.2, the latest stable when pinned — reconfirm at docs.zephyrproject.org/latest/releases before assuming, since a new stable ships roughly every April/October)
+- **RTOS:** Zephyr, pinned in `west.yml` (currently v4.5.0, the latest stable when pinned — reconfirm at docs.zephyrproject.org/latest/releases before assuming, since a new stable ships roughly every April/October)
 - **MCU:** STM32F401RE (Nucleo board)
 - **BLE stack:** via X-NUCLEO-BNRG2A1, using Zephyr's BLE/HCI support
 - **Language/style/libraries:** C++23, WebKit code style, Embedded Template Library (ETL) — see `CLAUDE.md` for the concrete Kconfig/toolchain setup
