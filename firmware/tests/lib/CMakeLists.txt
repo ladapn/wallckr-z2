@@ -16,6 +16,7 @@ target_sources(app PRIVATE
     src/test_battery.cpp
     src/test_command_decoder.cpp
     src/test_filter.cpp
+    src/test_pi_controller.cpp
     src/test_regulator.cpp
     src/test_robot.cpp
     src/test_robot_packets.cpp
