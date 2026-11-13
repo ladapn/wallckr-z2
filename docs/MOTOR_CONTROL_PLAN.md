@@ -50,8 +50,9 @@ PR merges.
   `IWheelEncoder`, `ClosedLoopMotorController`, and tests against a fake
   encoder and a fake motor.
 - [ ] **4. `feat(main): close the motor speed loop`**: `ZephyrWheelEncoder`
-  (qdec `SENSOR_CHAN_ENCODER_COUNT`, differences taken modulo the driver's
-  wrap at 65,359) and the wiring. Gains and `V_MAX` are placeholders, marked
+  (qdec `SENSOR_CHAN_ENCODER_COUNT`; the driver counts 0–65,359 and wraps,
+  so differences are taken modulo 65,360, which is 172 revolutions) and the
+  wiring. Gains and `V_MAX` are placeholders, marked
   as untuned.
 - [ ] **5. `feat(lib): send motor speed telemetry`**, plus the packet in
   ovladacka.
