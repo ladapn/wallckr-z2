@@ -44,7 +44,7 @@ PR merges.
     every 10 ms, then stops the motor.
   - Gives the direction sign (forward must count up), the gain (speed per
     duty) and the time constant, which set `V_MAX` and the PI gains.
-- [ ] **2. `feat(lib): add a PI speed controller`**, with Ztest cases for the
+- [x] **2. `feat(lib): add a PI speed controller`**, with Ztest cases for the
   proportional and integral terms, the clamp and the anti-windup.
 - [ ] **3. `feat(lib): add the closed-loop motor controller`**:
   `IWheelEncoder`, `ClosedLoopMotorController`, and tests against a fake
