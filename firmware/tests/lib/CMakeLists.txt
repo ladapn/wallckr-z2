@@ -14,6 +14,7 @@ target_include_directories(app PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../common)
 target_sources(app PRIVATE
     src/test_auto_steering.cpp
     src/test_battery.cpp
+    src/test_closed_loop_motor.cpp
     src/test_command_decoder.cpp
     src/test_filter.cpp
     src/test_pi_controller.cpp
