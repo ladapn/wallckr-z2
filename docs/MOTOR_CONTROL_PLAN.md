@@ -39,7 +39,7 @@ PR merges.
 
 ## Steps
 
-- [ ] **1. `feat(bringup): add a motor step-response command`**
+- [x] **1. `feat(bringup): add a motor step-response command`**
   - `motor step <duty> <ms>`: applies a PWM step and prints the encoder count
     every 10 ms, then stops the motor.
   - Gives the direction sign (forward must count up), the gain (speed per
