@@ -9,6 +9,7 @@
 add_library(wallckr_lib STATIC
     Battery/Battery.cpp
     Communication/ExternalCommandDecoder.cpp
+    Motion/ClosedLoopMotorController.cpp
     Motion/Motion.cpp
     Sensing/Sensing.cpp
     Telemetry/RobotPackets.cpp

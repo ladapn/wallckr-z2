@@ -46,7 +46,7 @@ PR merges.
     duty) and the time constant, which set `V_MAX` and the PI gains.
 - [x] **2. `feat(lib): add a PI speed controller`**, with Ztest cases for the
   proportional and integral terms, the clamp and the anti-windup.
-- [ ] **3. `feat(lib): add the closed-loop motor controller`**:
+- [x] **3. `feat(lib): add the closed-loop motor controller`**:
   `IWheelEncoder`, `ClosedLoopMotorController`, and tests against a fake
   encoder and a fake motor.
 - [ ] **4. `feat(main): close the motor speed loop`**: `ZephyrWheelEncoder`
